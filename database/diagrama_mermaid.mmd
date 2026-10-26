@@ -1,0 +1,32 @@
+erDiagram
+    CLIENTES ||--o{ PEDIDOS : realiza
+    PEDIDOS ||--|{ DETALLE_PEDIDO : contiene
+    PIZZAS ||--o{ DETALLE_PEDIDO : aparece_en
+
+    CLIENTES {
+        INT id_cliente PK
+        VARCHAR nombre
+        VARCHAR telefono
+    }
+
+    PEDIDOS {
+        INT id_pedido PK
+        INT id_cliente FK
+        DATETIME fecha_hora_recogida
+        VARCHAR estado
+    }
+
+    DETALLE_PEDIDO {
+        INT id_detalle PK
+        INT id_pedido FK
+        INT id_pizza FK
+        INT cantidad
+        DECIMAL precio_unitario
+    }
+
+    PIZZAS {
+        INT id_pizza PK
+        VARCHAR nombre
+        VARCHAR descripcion
+        DECIMAL precio
+    }

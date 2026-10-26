@@ -1,0 +1,16 @@
+{
+  "name": "italiany-pizzas",
+  "version": "1.0.0",
+  "description": "Sistema de gestión y pedidos para Italiany Pizzas - Sprint 1 Fullstack listo para Vercel",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["pizza", "sprint1", "italiany", "upchiapas", "vercel"],
+  "author": "Equipo Italiany Pizzas",
+  "license": "ISC",
+  "dependencies": {
+    "mysql2": "^3.9.7"
+  }
+}

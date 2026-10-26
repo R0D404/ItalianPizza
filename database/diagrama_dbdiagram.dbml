@@ -1,0 +1,36 @@
+Project Italiany_Pizzas {
+  database_type: 'MySQL'
+  Note: 'Base de datos del proyecto Italiany Pizzas'
+}
+
+Table pizzas {
+  id_pizza int [pk, increment]
+  nombre varchar(100) [not null]
+  descripcion varchar(255) [not null]
+  precio decimal(10,2) [not null, note: 'Debe ser mayor o igual que 0']
+}
+
+Table clientes {
+  id_cliente int [pk, increment]
+  nombre varchar(120) [not null]
+  telefono varchar(30) [not null, note: 'Se guarda como texto para conservar ceros y símbolos']
+}
+
+Table pedidos {
+  id_pedido int [pk, increment]
+  id_cliente int [not null]
+  fecha_hora_recogida datetime [not null]
+  estado varchar(30) [not null, default: 'Confirmado', note: 'Confirmado, En preparación, Listo o Entregado']
+}
+
+Table detalle_pedido {
+  id_detalle int [pk, increment]
+  id_pedido int [not null]
+  id_pizza int [not null]
+  cantidad int [not null, note: 'Debe ser mayor que 0']
+  precio_unitario decimal(10,2) [not null, note: 'Precio de la pizza al momento del pedido']
+}
+
+Ref: clientes.id_cliente < pedidos.id_cliente
+Ref: pedidos.id_pedido < detalle_pedido.id_pedido
+Ref: pizzas.id_pizza < detalle_pedido.id_pizza

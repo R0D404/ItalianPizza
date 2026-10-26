@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Italiany Pizzas - Menú Tradicional</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Encabezado y Navegación Principal -->
+    <header class="header">
+        <div class="header-container">
+            <div class="brand">
+                <span class="brand-logo">🍕</span>
+                <div class="brand-text">
+                    <h1 class="brand-title">Italiany Pizzas</h1>
+                    <p class="brand-subtitle">Sabor artesanal italiano · Sprint 1 Fullstack</p>
+                </div>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link active">Menú Cliente</a></li>
+                    <li><a href="cocina.html" class="nav-link">Vista Cocina</a></li>
+                    <li><a href="admin.html" class="nav-link">Administración</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Banner Hero de Bienvenida -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Nuestras Especialidades Italianas</h2>
+            <p>Pizzas horneadas a la piedra con ingredientes frescos y recetas tradicionales. Consulta nuestro catálogo del día, agrega tus pizzas y haz tu pedido.</p>
+        </div>
+    </section>
+
+    <!-- Contenedor Principal -->
+    <main class="main-container">
+
+        <!-- Sección de Catálogo / Menú de Pizzas -->
+        <section class="section-menu" id="catalogo">
+            <div class="section-header">
+                <h3 class="section-title">Catálogo de Pizzas</h3>
+                <span class="badge-source">Sincronizado vía API REST &amp; Base de Datos</span>
+            </div>
+            <p class="section-description">
+                Listado en tiempo real. Usa los botones <strong>(+)</strong> y <strong>(-)</strong> para armar tu orden.
+            </p>
+
+            <!-- Rejilla de Tarjetas Dinámicas -->
+            <div class="pizza-grid" id="pizza-grid">
+                <!-- Se inyecta dinámicamente desde client.js -->
+            </div>
+        </section>
+
+        <!-- Sección de Resumen y Formulario de Cliente -->
+        <section class="section-client-form">
+            <div class="form-card">
+                <div class="form-header">
+                    <h3 class="form-title">Armar Pedido e Identificación del Cliente</h3>
+                    <p class="form-subtitle">
+                        Revisa tu selección y completa tus datos de contacto para recoger en sucursal (Horario de 15:00 a 22:00 hrs).
+                    </p>
+                </div>
+
+                <!-- Resumen dinámico del pedido (HU-03) -->
+                <div id="resumen-pedido">
+                    <div class="cart-empty-message" style="text-align: center; color: var(--color-text-muted); padding: 1.5rem;">
+                        🍕 Aún no has seleccionado ninguna pizza. Elige tus favoritas arriba con el botón (+).
+                    </div>
+                </div>
+
+                <form class="visual-form" id="form-cliente">
+                    <div class="form-group">
+                        <label for="cliente-nombre" class="form-label">
+                            Nombre Completo <span class="required-indicator" aria-hidden="true">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="cliente-nombre" 
+                            name="nombre" 
+                            class="form-input" 
+                            placeholder="Ej. Giovanni Rossi" 
+                            required 
+                            autocomplete="name"
+                        >
+                        <span class="field-hint">Campo obligatorio. Debe coincidir con el nombre de contacto.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cliente-telefono" class="form-label">
+                            Número de Teléfono <span class="required-indicator" aria-hidden="true">*</span>
+                        </label>
+                        <input 
+                            type="tel" 
+                            id="cliente-telefono" 
+                            name="telefono" 
+                            class="form-input" 
+                            placeholder="Ej. 9611234567" 
+                            required 
+                            pattern="[0-9+ -]{7,15}"
+                            autocomplete="tel"
+                        >
+                        <span class="field-hint">Campo obligatorio para notificarte cuando tu orden esté lista.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hora-recogida" class="form-label">
+                            Horario de Recogida Deseado <span class="required-indicator" aria-hidden="true">*</span>
+                        </label>
+                        <select id="hora-recogida" name="hora_recogida" class="form-input" required>
+                            <option value="15:00">15:00 hrs (3:00 PM)</option>
+                            <option value="15:30">15:30 hrs (3:30 PM)</option>
+                            <option value="16:00">16:00 hrs (4:00 PM)</option>
+                            <option value="16:30">16:30 hrs (4:30 PM)</option>
+                            <option value="17:00">17:00 hrs (5:00 PM)</option>
+                            <option value="17:30">17:30 hrs (5:30 PM)</option>
+                            <option value="18:00" selected>18:00 hrs (6:00 PM)</option>
+                            <option value="18:30">18:30 hrs (6:30 PM)</option>
+                            <option value="19:00">19:00 hrs (7:00 PM)</option>
+                            <option value="19:30">19:30 hrs (7:30 PM)</option>
+                            <option value="20:00">20:00 hrs (8:00 PM)</option>
+                            <option value="20:30">20:30 hrs (8:30 PM)</option>
+                            <option value="21:00">21:00 hrs (9:00 PM)</option>
+                            <option value="21:30">21:30 hrs (9:30 PM)</option>
+                            <option value="22:00">22:00 hrs (10:00 PM)</option>
+                        </select>
+                        <span class="field-hint">Horario de operación de cocina: 15:00 a 22:00 hrs.</span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="btn-guardar-pedido" disabled>
+                            Confirmar y Enviar Pedido a Cocina
+                        </button>
+                        <button type="reset" class="btn btn-secondary" onclick="carrito={}; actualizarResumenPedido(); cargarCatalogo();">
+                            Limpiar Selección
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Pie de Página -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-copy">&copy; 2026 Italiany Pizzas. Proyecto Académico de Desarrollo por Roles · Sprint 1 Fullstack.</p>
+            <p class="footer-tech">Stack Integrado: HTML5 · CSS3 · Vanilla JS · Node.js Serverless · SQL / Vercel Ready</p>
+        </div>
+    </footer>
+
+    <script src="js/client.js"></script>
+</body>
+</html>
