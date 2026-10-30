@@ -7,15 +7,19 @@
     },
     {
       "source": "/admin",
-      "destination": "/admin.html"
+      "destination": "/vistas/admin/index.html"
     },
     {
       "source": "/cocina",
-      "destination": "/cocina.html"
+      "destination": "/vistas/cocina/index.html"
     },
     {
       "source": "/menu",
-      "destination": "/index.html"
+      "destination": "/vistas/cliente/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/login.html"
     }
   ]
 }

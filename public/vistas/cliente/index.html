@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Italiany Pizzas - Menú y Pedido para Recoger</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/login.css">
+    <script src="../../js/auth.js"></script>
+    <script>Auth.requireRole(['cliente', 'admin']);</script>
+</head>
+<body>
+
+    <!-- Barra de Sesión de Usuario -->
+    <div class="auth-bar">
+        <div class="auth-user-info">
+            <span>🛒 Cliente:</span>
+            <span id="auth-user" style="font-weight:bold;">Cliente</span>
+        </div>
+        <button type="button" id="auth-logout">Cerrar sesión</button>
+    </div>
+
+    <!-- Encabezado con Navegación de Vistas Separadas -->
+    <header class="header">
+        <div class="header-container">
+            <div class="brand">
+                <span class="brand-logo">🍕</span>
+                <div class="brand-text">
+                    <h1 class="brand-title">Italiany Pizzas</h1>
+                    <p class="brand-subtitle">Vista Cliente · Pedidos para Recoger</p>
+                </div>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link active">🛒 Menú y Pedido</a></li>
+                    <li><a href="estado.html" class="nav-link">🔍 Rastreo de Pedido</a></li>
+                    <li><a href="../../login.html" class="nav-link">🔄 Cambiar Rol / Salir</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Banner Informativo -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Pide en Línea y Recoge en Pizzería</h2>
+            <p>Horario de atención: 15:00 a 22:00 hrs · Hornos de piedra tradicionales · Capacidad máxima: 6 pizzas por hora para garantizar la más alta calidad.</p>
+        </div>
+    </section>
+
+    <!-- Contenedor Principal: Menú + Carrito de Pedido -->
+    <main class="main-container">
+
+        <!-- Notificación de Requerimientos Cumplidos -->
+        <div class="sprint-notice">
+            <span class="notice-icon">📋</span>
+            <div class="notice-text">
+                <strong>Sprint 1 &amp; Sprint 2 — Vista de Cliente:</strong>
+                Menú con nombre, ingredientes y precio; selección de pizzas y cantidades; registro de cliente y teléfono; selección de horario de recogida (15:00 a 22:00 hrs); <strong>validación estricta de 6 pizzas/hora</strong> y sugerencia interactiva de <strong>horarios alternativos</strong>.
+            </div>
+        </div>
+
+        <div class="order-layout">
+
+            <!-- Columna Izquierda: Catálogo de Pizzas -->
+            <section class="menu-section">
+                <div class="section-header">
+                    <h2 class="section-title">Nuestra Carta de Pizzas</h2>
+                    <span class="badge badge-confirmado">Catálogo Oficial SQL</span>
+                </div>
+                <p class="section-description">Selecciona las pizzas deseadas indicando la cantidad con los botones (+) y (-).</p>
+
+                <div class="pizza-grid" id="pizza-catalog-container">
+                    <!-- Se renderiza dinámicamente con las pizzas de ItalianyStore -->
+                </div>
+            </section>
+
+            <!-- Columna Derecha (Sidebar): Carrito, Cliente y Horario -->
+            <aside class="sidebar-sticky">
+                <div class="order-summary-card">
+                    <div class="summary-title">
+                        <span>Mi Pedido de Recogida</span>
+                        <span class="badge badge-preparacion" id="cart-counter-badge">0 pizzas</span>
+                    </div>
+
+                    <!-- Lista de Desglose de Pizzas Seleccionadas -->
+                    <div class="cart-items-list" id="cart-items-container">
+                        <div class="cart-empty-msg">No has seleccionado ninguna pizza aún. Usa los controles (+) en el catálogo.</div>
+                    </div>
+
+                    <!-- Totales -->
+                    <div class="summary-totals">
+                        <div class="totals-row">
+                            <span>Total de Pizzas:</span>
+                            <strong id="summary-total-qty">0</strong>
+                        </div>
+                        <div class="totals-row final">
+                            <span>Total a Pagar:</span>
+                            <span id="summary-total-price">$0.00 MXN</span>
+                        </div>
+                    </div>
+
+                    <!-- Formulario de Datos del Cliente y Horario -->
+                    <form id="order-form" onsubmit="handleRealizarPedido(event)">
+                        
+                        <div class="form-group">
+                            <label for="cliente-nombre" class="form-label">
+                                Tu Nombre Completo <span class="required-indicator">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="cliente-nombre" 
+                                class="form-input" 
+                                placeholder="Ej. Giovanni Rossi" 
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cliente-telefono" class="form-label">
+                                Teléfono de Contacto <span class="required-indicator">*</span>
+                            </label>
+                            <input 
+                                type="tel" 
+                                id="cliente-telefono" 
+                                class="form-input" 
+                                placeholder="Ej. 5512345678" 
+                                required
+                                pattern="[0-9+ -]{7,15}"
+                            >
+                            <span class="field-hint">Almacenado como texto en BD (conserva ceros y lada).</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hora-recogida" class="form-label">
+                                Horario Deseado de Recogida <span class="required-indicator">*</span>
+                            </label>
+                            <select id="hora-recogida" class="form-select" onchange="verificarCapacidadActual()" required>
+                                <option value="15:00">15:00 hrs</option>
+                                <option value="16:00">16:00 hrs</option>
+                                <option value="17:00">17:00 hrs</option>
+                                <option value="18:00">18:00 hrs</option>
+                                <option value="19:00">19:00 hrs</option>
+                                <option value="20:00">20:00 hrs</option>
+                                <option value="21:00">21:00 hrs</option>
+                                <option value="22:00">22:00 hrs</option>
+                            </select>
+                            <span class="field-hint">Horario de servicio: 15:00 a 22:00 hrs.</span>
+                        </div>
+
+                        <!-- ALERTA DE CAPACIDAD SUPERADA (MÁXIMO 6 PIZZAS/HORA) -->
+                        <div id="capacity-alert-box" class="capacity-alert">
+                            <div class="capacity-alert-title">
+                                <span>⚠️ Capacidad Excedida para este Horario</span>
+                            </div>
+                            <p class="capacity-alert-msg" id="capacity-alert-text">
+                                La regla de negocio permite un máximo de 6 pizzas por hora.
+                            </p>
+                            <div class="alternatives-container" id="alternatives-wrapper">
+                                <span class="alt-label">Horarios alternativos disponibles:</span>
+                                <div id="alternatives-chips"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-submit-order" class="btn btn-primary btn-block" style="margin-top: 1.25rem;" disabled>
+                            Confirmar y Enviar Pedido
+                        </button>
+
+                    </form>
+
+                </div>
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-copy">&copy; 2026 Italiany Pizzas · Universidad Politécnica de Chiapas · Sprint 1, 2 y 3</p>
+            <p class="footer-tech">Stack: HTML5 · CSS3 · Vanilla JS · LocalStorage · SQL Ready</p>
+        </div>
+    </footer>
+
+    <!-- Lógica de Datos y Capacidad -->
+    <script src="../../js/data-store.js"></script>
+    <script>
+        // Carrito en memoria local del cliente: { pizzaId: cantidad }
+        let carrito = {};
+
+        function renderCatalog() {
+            const container = document.getElementById('pizza-catalog-container');
+            const pizzas = ItalianyStore.getPizzas();
+            
+            container.innerHTML = pizzas.map(pizza => `
+                <article class="pizza-card">
+                    <div class="pizza-card-header">
+                        <span class="pizza-badge ${pizza.disponible ? 'available' : 'unavailable'}">
+                            ${pizza.disponible ? 'Disponible' : 'Agotada'}
+                        </span>
+                        <span class="pizza-id">#0${pizza.id}</span>
+                    </div>
+                    <div class="pizza-card-body">
+                        <h3 class="pizza-name">${pizza.nombre}</h3>
+                        <p class="pizza-ingredients">${pizza.descripcion}</p>
+                    </div>
+                    <div class="pizza-card-footer">
+                        <div class="pizza-footer-row">
+                            <div class="pizza-price-container">
+                                <span class="price-label">Precio Unitario</span>
+                                <span class="pizza-price">$${pizza.precio.toFixed(2)} MXN</span>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="btn-qty" onclick="modificarCantidad(${pizza.id}, -1)">-</button>
+                                <input type="text" class="qty-input" id="qty-input-${pizza.id}" value="${carrito[pizza.id] || 0}" readonly>
+                                <button type="button" class="btn-qty" onclick="modificarCantidad(${pizza.id}, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function modificarCantidad(pizzaId, delta) {
+            const actual = carrito[pizzaId] || 0;
+            const nuevo = Math.max(0, actual + delta);
+            if (nuevo === 0) {
+                delete carrito[pizzaId];
+            } else {
+                carrito[pizzaId] = nuevo;
+            }
+            
+            const inputEl = document.getElementById(`qty-input-${pizzaId}`);
+            if (inputEl) inputEl.value = nuevo;
+
+            actualizarCarritoUI();
+            verificarCapacidadActual();
+        }
+
+        function actualizarCarritoUI() {
+            const pizzas = ItalianyStore.getPizzas();
+            const itemsContainer = document.getElementById('cart-items-container');
+            const totalQtyEl = document.getElementById('summary-total-qty');
+            const totalPriceEl = document.getElementById('summary-total-price');
+            const counterBadge = document.getElementById('cart-counter-badge');
+            const btnSubmit = document.getElementById('btn-submit-order');
+
+            const keys = Object.keys(carrito);
+            if (keys.length === 0) {
+                itemsContainer.innerHTML = '<div class="cart-empty-msg">No has seleccionado ninguna pizza aún. Usa los controles (+) en el catálogo.</div>';
+                totalQtyEl.textContent = '0';
+                totalPriceEl.textContent = '$0.00 MXN';
+                counterBadge.textContent = '0 pizzas';
+                btnSubmit.disabled = true;
+                return;
+            }
+
+            let totalPizzas = 0;
+            let totalMonto = 0;
+            let itemsHtml = '';
+
+            keys.forEach(id => {
+                const pizza = pizzas.find(p => p.id === Number(id));
+                if (pizza) {
+                    const cant = carrito[id];
+                    const subtotal = cant * pizza.precio;
+                    totalPizzas += cant;
+                    totalMonto += subtotal;
+
+                    itemsHtml += `
+                        <div class="cart-item">
+                            <div>
+                                <strong>${pizza.nombre}</strong>
+                                <div class="text-sm text-muted">${cant} x $${pizza.precio.toFixed(2)}</div>
+                            </div>
+                            <span class="font-bold">$${subtotal.toFixed(2)}</span>
+                        </div>
+                    `;
+                }
+            });
+
+            itemsContainer.innerHTML = itemsHtml;
+            totalQtyEl.textContent = totalPizzas;
+            totalPriceEl.textContent = `$${totalMonto.toFixed(2)} MXN`;
+            counterBadge.textContent = `${totalPizzas} pizza${totalPizzas > 1 ? 's' : ''}`;
+        }
+
+        function verificarCapacidadActual() {
+            const hora = document.getElementById('hora-recogida').value;
+            const totalPizzas = Object.values(carrito).reduce((a, b) => a + b, 0);
+            const alertBox = document.getElementById('capacity-alert-box');
+            const alertText = document.getElementById('capacity-alert-text');
+            const chipsContainer = document.getElementById('alternatives-chips');
+            const btnSubmit = document.getElementById('btn-submit-order');
+
+            if (totalPizzas === 0) {
+                alertBox.classList.remove('active');
+                btnSubmit.disabled = true;
+                return true;
+            }
+
+            const validacion = ItalianyStore.validarCapacidadHora(hora, totalPizzas);
+
+            if (!validacion.valido) {
+                // Alerta de superación del límite
+                alertBox.classList.add('active');
+                alertText.innerHTML = `Para las <strong>${hora} hrs</strong> actualmente hay <strong>${validacion.ocupadas} pizza(s)</strong> en cola. Al sumar tus <strong>${validacion.solicitadas} pizza(s)</strong> superas el límite de 6 pizzas por hora (restaban solo ${validacion.espacioRestante} disponibles).`;
+                
+                // Mostrar chips con horarios alternativos
+                if (validacion.alternativas.length > 0) {
+                    chipsContainer.innerHTML = validacion.alternativas.map(alt => `
+                        <button type="button" class="chip-alternative" onclick="seleccionarHorarioAlternativo('${alt}')">
+                            ${alt} hrs
+                        </button>
+                    `).join('');
+                } else {
+                    chipsContainer.innerHTML = '<span class="text-sm">No hay horarios con capacidad suficiente para este volumen. Disminuye la cantidad.</span>';
+                }
+
+                btnSubmit.disabled = true;
+                return false;
+            } else {
+                alertBox.classList.remove('active');
+                btnSubmit.disabled = false;
+                return true;
+            }
+        }
+
+        function seleccionarHorarioAlternativo(hora) {
+            document.getElementById('hora-recogida').value = hora;
+            verificarCapacidadActual();
+        }
+
+        function handleRealizarPedido(event) {
+            event.preventDefault();
+            const totalPizzas = Object.values(carrito).reduce((a, b) => a + b, 0);
+            if (totalPizzas === 0) {
+                alert('Por favor selecciona al menos una pizza antes de confirmar.');
+                return;
+            }
+
+            if (!verificarCapacidadActual()) {
+                alert('Por favor selecciona un horario alternativo con capacidad disponible.');
+                return;
+            }
+
+            const nombre = document.getElementById('cliente-nombre').value;
+            const telefono = document.getElementById('cliente-telefono').value;
+            const hora = document.getElementById('hora-recogida').value;
+            const pizzasCatalogo = ItalianyStore.getPizzas();
+
+            const pizzasPedido = Object.keys(carrito).map(id => {
+                const p = pizzasCatalogo.find(item => item.id === Number(id));
+                return {
+                    id: p.id,
+                    nombre: p.nombre,
+                    cantidad: carrito[id],
+                    precio: p.precio
+                };
+            });
+
+            const totalMonto = pizzasPedido.reduce((acc, p) => acc + (p.cantidad * p.precio), 0);
+
+            // Guardar pedido en data-store
+            const nuevoPedido = ItalianyStore.crearPedido({
+                cliente: nombre,
+                telefono: telefono,
+                pizzas: pizzasPedido,
+                total_pizzas: totalPizzas,
+                total_monto: totalMonto,
+                hora_recogida: hora
+            });
+
+            // Redirigir a la vista de confirmación del pedido
+            window.location.href = `confirmacion.html?folio=${nuevoPedido.id}`;
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            Auth.montarBarra();
+            renderCatalog();
+            actualizarCarritoUI();
+        });
+    </script>
+
+</body>
+</html>

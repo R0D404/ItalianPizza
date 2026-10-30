@@ -3,142 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Italiany Pizzas - Menú Tradicional</title>
+    <title>Italiany Pizzas - Sistema de Pedidos para Recoger | UP Chiapas</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
 
-    <!-- Encabezado y Navegación Principal -->
+    <!-- Barra de sesión -->
+    <div class="auth-bar" id="auth-bar">
+        <span id="auth-user">Invitado</span>
+        <a href="login.html" id="auth-login-link" style="color:#fff;">🔐 Iniciar sesión</a>
+        <button type="button" id="auth-logout" hidden>Cerrar sesión</button>
+    </div>
+
+
+    <!-- Encabezado Institucional -->
     <header class="header">
         <div class="header-container">
             <div class="brand">
                 <span class="brand-logo">🍕</span>
                 <div class="brand-text">
                     <h1 class="brand-title">Italiany Pizzas</h1>
-                    <p class="brand-subtitle">Sabor artesanal italiano · Sprint 1 Fullstack</p>
+                    <p class="brand-subtitle">Universidad Politécnica de Chiapas · Análisis y Requerimientos de Software</p>
                 </div>
             </div>
             <nav class="nav">
                 <ul class="nav-list">
-                    <li><a href="index.html" class="nav-link active">Menú Cliente</a></li>
-                    <li><a href="cocina.html" class="nav-link">Vista Cocina</a></li>
-                    <li><a href="admin.html" class="nav-link">Administración</a></li>
+                    <li><a href="vistas/cliente/index.html" class="nav-link">🛒 Vista Cliente</a></li>
+                    <li><a href="vistas/cliente/estado.html" class="nav-link">🔍 Rastreo Pedido</a></li>
+                    <li><a href="vistas/cocina/index.html" class="nav-link">👨‍🍳 Vista Cocina</a></li>
+                    <li><a href="vistas/admin/index.html" class="nav-link">📊 Vista Admin</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <!-- Banner Hero de Bienvenida -->
+    <!-- Banner Hero con Datos del Proyecto -->
     <section class="hero">
         <div class="hero-content">
-            <h2>Nuestras Especialidades Italianas</h2>
-            <p>Pizzas horneadas a la piedra con ingredientes frescos y recetas tradicionales. Consulta nuestro catálogo del día, agrega tus pizzas y haz tu pedido.</p>
+            <h2>Portal de Evaluación y Demostración Frontend</h2>
+            <p>
+                Sistema web responsivo para pedidos de recogida en pizzería. Desarrollado de forma modular con vistas separadas y cumplimiento completo de la <strong>Tabla de Entregas de Sprints (1, 2 y 3)</strong>.
+            </p>
         </div>
     </section>
 
     <!-- Contenedor Principal -->
     <main class="main-container">
 
-        <!-- Sección de Catálogo / Menú de Pizzas -->
-        <section class="section-menu" id="catalogo">
-            <div class="section-header">
-                <h3 class="section-title">Catálogo de Pizzas</h3>
-                <span class="badge-source">Sincronizado vía API REST &amp; Base de Datos</span>
+        <!-- Cuadro Informativo de Entrega y Cierre -->
+        <div class="sprint-notice">
+            <span class="notice-icon">🎓</span>
+            <div class="notice-text">
+                <strong>Periodo de Cierre y Evaluación (30 y 31 de octubre de 2026):</strong>
+                Demostración integral de los flujos de Cliente, Cocina y Administrador. Las vistas se encuentran <strong>separadas en directorios independientes</strong> y comunicadas en tiempo real mediante el gestor de datos.
             </div>
-            <p class="section-description">
-                Listado en tiempo real. Usa los botones <strong>(+)</strong> y <strong>(-)</strong> para armar tu orden.
-            </p>
+        </div>
 
-            <!-- Rejilla de Tarjetas Dinámicas -->
-            <div class="pizza-grid" id="pizza-grid">
-                <!-- Se inyecta dinámicamente desde client.js -->
+        <!-- TARJETAS DE ACCESO DIRECTO A LAS VISTAS SEPARADAS -->
+        <div class="section-header">
+            <h2 class="section-title">Vistas Separadas del Sistema</h2>
+            <span class="badge badge-confirmado">Módulos Desacoplados</span>
+        </div>
+        <p class="section-description">Selecciona cualquiera de las vistas para interactuar y evaluar sus requerimientos específicos:</p>
+
+        <div class="portal-cards-grid">
+
+            <!-- 1. VISTA CLIENTE: MENÚ Y PEDIDO -->
+            <div class="portal-card">
+                <div>
+                    <div class="portal-card-icon">🛒</div>
+                    <h3 class="portal-card-title">1. Cliente: Menú y Pedido</h3>
+                    <p class="portal-card-desc">
+                        Catálogo con nombre, descripción y precio; selección de cantidades (+/-); formulario de nombre y teléfono; selección de horario (15:00 a 22:00); <strong>validación de 6 pizzas/hora</strong> y recomendación de <strong>horarios alternativos</strong>.
+                    </p>
+                </div>
+                <a href="vistas/cliente/index.html" class="btn btn-primary btn-block">
+                    Abrir Vista de Menú &rarr;
+                </a>
+            </div>
+
+            <!-- 2. VISTA CLIENTE: RASTREO DE ESTADO -->
+            <div class="portal-card">
+                <div>
+                    <div class="portal-card-icon">⏱️</div>
+                    <h3 class="portal-card-title">2. Cliente: Rastreo en Vivo</h3>
+                    <p class="portal-card-desc">
+                        Consulta de estado mediante Folio o Teléfono; stepper visual con los 4 estados: <strong>Confirmado &rarr; En preparación &rarr; Listo &rarr; Entregado</strong> y desglose completo del pedido.
+                    </p>
+                </div>
+                <a href="vistas/cliente/estado.html" class="btn btn-outline-primary btn-block">
+                    Abrir Rastreo de Pedido &rarr;
+                </a>
+            </div>
+
+            <!-- 3. VISTA COCINA: MONITOR Y COMANDAS -->
+            <div class="portal-card">
+                <div>
+                    <div class="portal-card-icon">👨‍🍳</div>
+                    <h3 class="portal-card-title">3. Monitor de Cocina</h3>
+                    <p class="portal-card-desc">
+                        Visualización de comandas ordenadas por horario, medidor de capacidad de horno por franja horaria, filtros y <strong>actualización de estados en un clic</strong> que se refleja instantáneamente en el cliente.
+                    </p>
+                </div>
+                <a href="vistas/cocina/index.html" class="btn btn-success btn-block">
+                    Abrir Vista Cocina &rarr;
+                </a>
+            </div>
+
+            <!-- 4. VISTA ADMINISTRADOR: SUPERVISIÓN Y CATÁLOGO -->
+            <div class="portal-card">
+                <div>
+                    <div class="portal-card-icon">📊</div>
+                    <h3 class="portal-card-title">4. Panel de Administración</h3>
+                    <p class="portal-card-desc">
+                        Métricas generales (KPIs), supervisión de pedidos, auditoría de saturación de horarios y <strong>administración del catálogo de pizzas</strong> (formulario para agregar nuevas pizzas que se integran al menú).
+                    </p>
+                </div>
+                <a href="vistas/admin/index.html" class="btn btn-secondary btn-block">
+                    Abrir Panel de Admin &rarr;
+                </a>
+            </div>
+
+        </div>
+
+        <!-- TABLA OFICIAL DE SPRINTS Y CUMPLIMIENTO -->
+        <section style="margin-top: 3.5rem;">
+            <div class="section-header">
+                <h2 class="section-title">Matriz de Cumplimiento según Documento de Evaluación</h2>
+                <span class="badge badge-confirmado">Metodología Scrum</span>
+            </div>
+
+            <div class="table-responsive-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Sprint / Fechas</th>
+                            <th scope="col">Objetivo</th>
+                            <th scope="col">Entregables Programados</th>
+                            <th scope="col">Implementación Frontend</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Sprint 1</strong><br><span class="text-sm text-muted">21–23 oct. 2026</span></td>
+                            <td>Construir la estructura inicial y el menú.</td>
+                            <td>
+                                • Menú con nombre, ingredientes y precio.<br>
+                                • Formulario visual de cliente.<br>
+                                • Vistas iniciales de cocina y administrador.<br>
+                                • Tablas SQL y pizzas de prueba.
+                            </td>
+                            <td><span class="badge badge-listo">✓ 100% Cumplido</span><br><span class="text-sm">Catálogo y maquetación responsiva HTML5/CSS3</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sprint 2</strong><br><span class="text-sm text-muted">24–27 oct. 2026</span></td>
+                            <td>Registrar pedidos y organizarlos en cocina.</td>
+                            <td>
+                                • Selección de pizzas y cantidades.<br>
+                                • Registro del cliente y pedido.<br>
+                                • Selección de horario de recogida.<br>
+                                • <strong>Validación de capacidad de 6 pizzas/hora</strong>.<br>
+                                • <strong>Propuesta de horarios alternativos</strong>.<br>
+                                • Lista de pedidos en cocina.<br>
+                                • <strong>Actualización de estados</strong>.
+                            </td>
+                            <td><span class="badge badge-listo">✓ 100% Cumplido</span><br><span class="text-sm">Regla de 6 pizzas/h con alertas dinámicas y cambio de estados</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sprint 3</strong><br><span class="text-sm text-muted">28–29 oct. 2026</span></td>
+                            <td>Integrar el proceso completo y verificar su funcionamiento.</td>
+                            <td>
+                                • <strong>Confirmación del pedido</strong>.<br>
+                                • <strong>Consulta de estado por el cliente</strong>.<br>
+                                • <strong>Supervisión de pedidos en administración</strong>.<br>
+                                • Integración de Cliente, Cocina y Administrador.<br>
+                                • Pruebas funcionales y correcciones.
+                            </td>
+                            <td><span class="badge badge-listo">✓ 100% Cumplido</span><br><span class="text-sm">Ticket con folio, stepper de 4 estados e integración total</span></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
-        <!-- Sección de Resumen y Formulario de Cliente -->
-        <section class="section-client-form">
-            <div class="form-card">
-                <div class="form-header">
-                    <h3 class="form-title">Armar Pedido e Identificación del Cliente</h3>
-                    <p class="form-subtitle">
-                        Revisa tu selección y completa tus datos de contacto para recoger en sucursal (Horario de 15:00 a 22:00 hrs).
-                    </p>
-                </div>
-
-                <!-- Resumen dinámico del pedido (HU-03) -->
-                <div id="resumen-pedido">
-                    <div class="cart-empty-message" style="text-align: center; color: var(--color-text-muted); padding: 1.5rem;">
-                        🍕 Aún no has seleccionado ninguna pizza. Elige tus favoritas arriba con el botón (+).
-                    </div>
-                </div>
-
-                <form class="visual-form" id="form-cliente">
-                    <div class="form-group">
-                        <label for="cliente-nombre" class="form-label">
-                            Nombre Completo <span class="required-indicator" aria-hidden="true">*</span>
-                        </label>
-                        <input 
-                            type="text" 
-                            id="cliente-nombre" 
-                            name="nombre" 
-                            class="form-input" 
-                            placeholder="Ej. Giovanni Rossi" 
-                            required 
-                            autocomplete="name"
-                        >
-                        <span class="field-hint">Campo obligatorio. Debe coincidir con el nombre de contacto.</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="cliente-telefono" class="form-label">
-                            Número de Teléfono <span class="required-indicator" aria-hidden="true">*</span>
-                        </label>
-                        <input 
-                            type="tel" 
-                            id="cliente-telefono" 
-                            name="telefono" 
-                            class="form-input" 
-                            placeholder="Ej. 9611234567" 
-                            required 
-                            pattern="[0-9+ -]{7,15}"
-                            autocomplete="tel"
-                        >
-                        <span class="field-hint">Campo obligatorio para notificarte cuando tu orden esté lista.</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="hora-recogida" class="form-label">
-                            Horario de Recogida Deseado <span class="required-indicator" aria-hidden="true">*</span>
-                        </label>
-                        <select id="hora-recogida" name="hora_recogida" class="form-input" required>
-                            <option value="15:00">15:00 hrs (3:00 PM)</option>
-                            <option value="15:30">15:30 hrs (3:30 PM)</option>
-                            <option value="16:00">16:00 hrs (4:00 PM)</option>
-                            <option value="16:30">16:30 hrs (4:30 PM)</option>
-                            <option value="17:00">17:00 hrs (5:00 PM)</option>
-                            <option value="17:30">17:30 hrs (5:30 PM)</option>
-                            <option value="18:00" selected>18:00 hrs (6:00 PM)</option>
-                            <option value="18:30">18:30 hrs (6:30 PM)</option>
-                            <option value="19:00">19:00 hrs (7:00 PM)</option>
-                            <option value="19:30">19:30 hrs (7:30 PM)</option>
-                            <option value="20:00">20:00 hrs (8:00 PM)</option>
-                            <option value="20:30">20:30 hrs (8:30 PM)</option>
-                            <option value="21:00">21:00 hrs (9:00 PM)</option>
-                            <option value="21:30">21:30 hrs (9:30 PM)</option>
-                            <option value="22:00">22:00 hrs (10:00 PM)</option>
-                        </select>
-                        <span class="field-hint">Horario de operación de cocina: 15:00 a 22:00 hrs.</span>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary" id="btn-guardar-pedido" disabled>
-                            Confirmar y Enviar Pedido a Cocina
-                        </button>
-                        <button type="reset" class="btn btn-secondary" onclick="carrito={}; actualizarResumenPedido(); cargarCatalogo();">
-                            Limpiar Selección
-                        </button>
-                    </div>
-                </form>
+        <!-- Equipo de Trabajo y Botón de Reset de Prueba -->
+        <section style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; background: var(--color-bg-subtle); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); margin-top: 2rem;">
+            <div>
+                <h4 style="font-size: 1.05rem; margin-bottom: 0.35rem;">Integrantes del Equipo (Scrum):</h4>
+                <p class="text-sm text-muted" style="line-height: 1.6;">
+                    Ivanna Muñoz Hernández · Kamila Selvas Gutiérrez · Karen Lizeth Pérez Hernández · Rodrigo González Morales · Ricardo Alfonso Ruiz Sol · Agdiel Saldaña Capetillo · Edgar Solís Hernández
+                </p>
+            </div>
+            <div>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="restablecerDatos()">
+                    ♻️ Restablecer Datos de Demostración
+                </button>
             </div>
         </section>
 
@@ -147,11 +207,30 @@
     <!-- Pie de Página -->
     <footer class="footer">
         <div class="footer-container">
-            <p class="footer-copy">&copy; 2026 Italiany Pizzas. Proyecto Académico de Desarrollo por Roles · Sprint 1 Fullstack.</p>
-            <p class="footer-tech">Stack Integrado: HTML5 · CSS3 · Vanilla JS · Node.js Serverless · SQL / Vercel Ready</p>
+            <p class="footer-copy">&copy; 2026 Italiany Pizzas · Universidad Politécnica de Chiapas</p>
+            <p class="footer-tech">Frontend Completo: HTML5 · CSS3 · JS Modular · Vistas Separadas</p>
         </div>
     </footer>
 
-    <script src="js/client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/data-store.js"></script>
+    <script>
+        (function () {
+            var s = Auth.sesion();
+            if (s) {
+                document.getElementById('auth-login-link').hidden = true;
+                document.getElementById('auth-logout').hidden = false;
+            }
+            Auth.montarBarra();
+        })();
+
+        function restablecerDatos() {
+            if (confirm('¿Deseas reiniciar los pedidos y catálogo a sus valores originales de prueba?')) {
+                ItalianyStore.resetDefaults();
+                alert('¡Datos de demostración reiniciados!');
+                location.reload();
+            }
+        }
+    </script>
 </body>
 </html>

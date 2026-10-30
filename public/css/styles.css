@@ -1,36 +1,37 @@
 /* ==========================================================================
    ITALIANY PIZZAS - SISTEMA DE DISEÑO Y HOJA DE ESTILOS UNIFICADA
-   Sprint 1: Estructura, Menú de Cliente, Vista de Cocina y Administración
-   Stack: HTML5 + CSS3 Puro (Sin frameworks ni librerías externas)
+   Sprints 1, 2 y 3: Menú, Capacidad, Cocina, Administración y Rastreo
+   Stack: HTML5 + CSS3 Puro (Sin frameworks externos)
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   1. VARIABLES CSS (PALETA DE COLORES Y TIPOGRAFÍA)
+   1. VARIABLES CSS (PALETA DE COLORES, TIPOGRAFÍA Y MEDIDAS)
    -------------------------------------------------------------------------- */
 :root {
     /* Paleta inspirada en tradición italiana */
     --color-primary: #b32d20;         /* Rojo pomodoro / terracota */
-    --color-primary-hover: #932217;   /* Rojo oscuro para estados hover */
+    --color-primary-hover: #8f1f14;   /* Rojo oscuro para hover */
     --color-secondary: #2d6a4f;       /* Verde albahaca fresca */
     --color-secondary-hover: #1b4332; /* Verde profundo */
-    --color-accent: #d97706;          /* Dorado queso horneado */
+    --color-accent: #d97706;          /* Ámbar horno de leña */
+    --color-danger: #dc2626;          /* Rojo alerta */
 
     /* Neutros y fondos */
     --color-bg-body: #fbf9f5;          /* Fondo crema cálido suave */
     --color-bg-surface: #ffffff;       /* Fondo de tarjetas y tablas */
-    --color-bg-subtle: #f3efe6;        /* Fondo sutil para headers secundarios */
-    --color-text-main: #2b2825;        /* Carbón legible */
-    --color-text-muted: #6b6762;       /* Gris medio para descripciones */
+    --color-bg-subtle: #f3efe6;        /* Fondo sutil de barras y cabeceras */
+    --color-text-main: #23201d;        /* Carbón de alta legibilidad */
+    --color-text-muted: #66615b;       /* Gris medio para descripciones */
     --color-border: #e6dfd5;           /* Bordes suaves */
 
-    /* Estados de Pedidos (Sprint 1) */
-    --status-confirmado-bg: #e0f2fe;   /* Azul claro */
+    /* Estados de Pedidos */
+    --status-confirmado-bg: #e0f2fe;
     --status-confirmado-text: #0369a1;
-    --status-preparacion-bg: #fef3c7; /* Amarillo / ámbar */
+    --status-preparacion-bg: #fef3c7;
     --status-preparacion-text: #b45309;
-    --status-listo-bg: #dcfce7;       /* Verde claro */
+    --status-listo-bg: #dcfce7;
     --status-listo-text: #15803d;
-    --status-entregado-bg: #f3f4f6;   /* Gris neutro */
+    --status-entregado-bg: #f3f4f6;
     --status-entregado-text: #4b5563;
 
     /* Sombras y bordes redondeados */
@@ -38,10 +39,10 @@
     --radius-md: 10px;
     --radius-lg: 16px;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
 
-    /* Tipografía de sistema */
+    /* Tipografía nativa */
     --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -79,7 +80,7 @@ ul {
 }
 
 /* --------------------------------------------------------------------------
-   3. ENCABEZADO Y NAVEGACIÓN
+   3. ENCABEZADO Y NAVEGACIÓN GLOBAL
    -------------------------------------------------------------------------- */
 .header {
     background-color: #ffffff;
@@ -91,9 +92,9 @@ ul {
 }
 
 .header-container {
-    max-width: 1200px;
+    max-width: 1240px;
     margin: 0 auto;
-    padding: 1rem 1.5rem;
+    padding: 0.85rem 1.5rem;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -113,30 +114,32 @@ ul {
 }
 
 .brand-title {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 800;
     color: var(--color-primary);
     letter-spacing: -0.5px;
 }
 
 .brand-subtitle {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--color-text-muted);
     font-weight: 500;
 }
 
 .nav-list {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.4rem;
     flex-wrap: wrap;
 }
 
 .nav-link {
-    display: inline-block;
-    padding: 0.5rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.85rem;
     border-radius: var(--radius-sm);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: var(--color-text-main);
     transition: background-color 0.2s, color 0.2s;
 }
@@ -155,36 +158,36 @@ ul {
    4. BANNERS Y TOOLBARS INFORMATIVAS
    -------------------------------------------------------------------------- */
 .hero {
-    background: linear-gradient(135deg, #b32d20 0%, #871c12 100%);
+    background: linear-gradient(135deg, #b32d20 0%, #7e170e 100%);
     color: #ffffff;
-    padding: 3rem 1.5rem;
+    padding: 2.5rem 1.5rem;
     text-align: center;
 }
 
 .hero-content {
-    max-width: 800px;
+    max-width: 820px;
     margin: 0 auto;
 }
 
 .hero h2 {
     font-size: 2rem;
     font-weight: 800;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.6rem;
 }
 
 .hero p {
-    font-size: 1.1rem;
-    opacity: 0.92;
+    font-size: 1.05rem;
+    opacity: 0.94;
 }
 
-.kitchen-toolbar, .admin-toolbar {
+.toolbar-bar {
     background-color: var(--color-bg-subtle);
     border-bottom: 1px solid var(--color-border);
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
 }
 
-.kitchen-toolbar-container, .admin-toolbar-container {
-    max-width: 1200px;
+.toolbar-container {
+    max-width: 1240px;
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
@@ -193,37 +196,27 @@ ul {
     gap: 1rem;
 }
 
-.kitchen-toolbar h2, .admin-toolbar h2 {
-    font-size: 1.4rem;
+.toolbar-info h2 {
+    font-size: 1.35rem;
     color: var(--color-text-main);
     font-weight: 700;
 }
 
-.kitchen-toolbar p, .admin-toolbar p {
+.toolbar-info p {
     color: var(--color-text-muted);
-    font-size: 0.9rem;
-    margin-top: 0.25rem;
-}
-
-.status-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    font-size: 0.88rem;
+    margin-top: 0.2rem;
 }
 
 /* --------------------------------------------------------------------------
-   5. CONTENEDOR PRINCIPAL Y SECCIONES
+   5. CONTENEDOR PRINCIPAL Y COMPONENTES
    -------------------------------------------------------------------------- */
 .main-container {
-    max-width: 1200px;
+    max-width: 1240px;
     margin: 2rem auto;
     padding: 0 1.5rem;
     flex: 1;
     width: 100%;
-}
-
-.section-menu {
-    margin-bottom: 3.5rem;
 }
 
 .section-header {
@@ -236,35 +229,24 @@ ul {
 }
 
 .section-title {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--color-text-main);
 }
 
 .section-description {
     color: var(--color-text-muted);
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.93rem;
 }
 
-.badge-source {
-    display: inline-block;
-    background-color: var(--color-bg-subtle);
-    color: var(--color-text-muted);
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 0.3rem 0.6rem;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--color-border);
-}
-
-/* Alerta de Sprint 1 */
+/* Alertas de Sprint y Requisitos */
 .sprint-notice {
     background-color: #fffbeb;
     border-left: 4px solid #f59e0b;
     border-radius: var(--radius-sm);
-    padding: 0.9rem 1.2rem;
-    margin-bottom: 1.75rem;
+    padding: 0.85rem 1.15rem;
+    margin-bottom: 1.5rem;
     display: flex;
     gap: 0.75rem;
     align-items: flex-start;
@@ -272,7 +254,7 @@ ul {
 }
 
 .notice-icon {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     line-height: 1;
 }
 
@@ -282,20 +264,79 @@ ul {
     line-height: 1.4;
 }
 
-.notice-text code {
-    background-color: rgba(245, 158, 11, 0.15);
-    padding: 0.1rem 0.35rem;
-    border-radius: 3px;
-    font-family: monospace;
-    font-size: 0.85rem;
+.notice-text strong {
+    color: #78350f;
+}
+
+/* Alerta de Capacidad superada y horarios alternativos */
+.capacity-alert {
+    background-color: #fef2f2;
+    border: 1.5px solid #f87171;
+    border-radius: var(--radius-md);
+    padding: 1.15rem;
+    margin-top: 0.75rem;
+    display: none; /* Se activa mediante JS si excede 6 pizzas/hora */
+}
+
+.capacity-alert.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.capacity-alert-title {
+    color: #991b1b;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.capacity-alert-msg {
+    color: #b91c1c;
+    font-size: 0.88rem;
+    margin-bottom: 0.75rem;
+}
+
+.alternatives-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.alt-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #7f1d1d;
+}
+
+.chip-alternative {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.chip-alternative:hover {
+    background-color: var(--color-primary);
+    color: #ffffff;
+    border-color: var(--color-primary);
+    transform: scale(1.05);
 }
 
 /* --------------------------------------------------------------------------
-   6. TARJETAS RESPONSIVAS DE PIZZAS (FRONTEND 1)
+   6. GRID DE PIZZAS Y CONTROLES DE CANTIDAD (SPRINTS 1 Y 2)
    -------------------------------------------------------------------------- */
 .pizza-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
     gap: 1.5rem;
     margin-top: 1rem;
 }
@@ -312,7 +353,7 @@ ul {
 }
 
 .pizza-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
     box-shadow: var(--shadow-md);
 }
 
@@ -328,10 +369,19 @@ ul {
     color: #15803d;
     font-size: 0.75rem;
     font-weight: 700;
-    padding: 0.2rem 0.5rem;
+    padding: 0.2rem 0.55rem;
     border-radius: 999px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+}
+
+.pizza-badge.unavailable {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    text-transform: uppercase;
 }
 
 .pizza-id {
@@ -346,15 +396,15 @@ ul {
 }
 
 .pizza-name {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-weight: 700;
     color: var(--color-text-main);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     line-height: 1.3;
 }
 
 .pizza-ingredients {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     color: var(--color-text-muted);
     line-height: 1.45;
 }
@@ -363,6 +413,12 @@ ul {
     padding: 1rem 1.25rem;
     background-color: var(--color-bg-subtle);
     border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.pizza-footer-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -374,59 +430,163 @@ ul {
 }
 
 .price-label {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--color-text-muted);
     text-transform: uppercase;
     font-weight: 600;
 }
 
 .pizza-price {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: var(--color-primary);
 }
 
-/* --------------------------------------------------------------------------
-   7. FORMULARIOS (CLIENTE Y ADMINISTRACIÓN)
-   -------------------------------------------------------------------------- */
-.form-card {
-    background-color: var(--color-bg-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: 2rem;
-    box-shadow: var(--shadow-sm);
+/* Control numérico de cantidad (+ / -) */
+.quantity-control {
+    display: inline-flex;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
 }
 
-.form-header {
-    margin-bottom: 1.5rem;
-}
-
-.form-title {
-    font-size: 1.3rem;
+.btn-qty {
+    background-color: #ffffff;
+    border: none;
+    width: 32px;
+    height: 32px;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--color-text-main);
+    cursor: pointer;
+    transition: background-color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.form-subtitle {
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
-    margin-top: 0.25rem;
+.btn-qty:hover {
+    background-color: var(--color-bg-subtle);
+    color: var(--color-primary);
 }
 
-.visual-form {
+.qty-input {
+    width: 40px;
+    border: none;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    outline: none;
+    background: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   7. LAYOUT DE PEDIDO: MENÚ + CARRITO / FORMULARIO FLOTANTE
+   -------------------------------------------------------------------------- */
+.order-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+    align-items: start;
+}
+
+.sidebar-sticky {
+    position: sticky;
+    top: 5rem;
+}
+
+.order-summary-card {
+    background-color: var(--color-bg-surface);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.summary-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-items-list {
+    max-height: 220px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 0.6rem;
 }
 
-.form-group {
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--color-bg-subtle);
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+}
+
+.cart-empty-msg {
+    color: var(--color-text-muted);
+    font-size: 0.88rem;
+    text-align: center;
+    padding: 1.5rem 0.5rem;
+}
+
+.summary-totals {
+    border-top: 2px dashed var(--color-border);
+    padding-top: 0.85rem;
+    margin-bottom: 1.25rem;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
 }
 
-.form-label {
+.totals-row {
+    display: flex;
+    justify-content: space-between;
     font-size: 0.92rem;
+}
+
+.totals-row.final {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    border-top: 1px solid var(--color-border);
+    padding-top: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   8. FORMULARIOS (VALIDACIÓN NATIVA Y LABELS ACCESIBLES)
+   -------------------------------------------------------------------------- */
+.form-card {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1.15rem;
+}
+
+.form-label {
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--color-text-main);
 }
@@ -437,11 +597,11 @@ ul {
     margin-left: 2px;
 }
 
-.form-input {
+.form-input, .form-select {
     width: 100%;
-    padding: 0.7rem 0.9rem;
+    padding: 0.65rem 0.85rem;
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 0.93rem;
     color: var(--color-text-main);
     background-color: #ffffff;
     border: 1.5px solid var(--color-border);
@@ -449,7 +609,7 @@ ul {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.form-input:focus {
+.form-input:focus, .form-select:focus {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(179, 45, 32, 0.15);
@@ -457,27 +617,23 @@ ul {
 
 .form-textarea {
     resize: vertical;
-    min-height: 90px;
+    min-height: 85px;
 }
 
 .field-hint {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--color-text-muted);
 }
 
-.form-actions {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    margin-top: 0.5rem;
-}
-
-/* Botones */
+/* --------------------------------------------------------------------------
+   9. BOTONES
+   -------------------------------------------------------------------------- */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.7rem 1.4rem;
+    gap: 0.4rem;
+    padding: 0.65rem 1.25rem;
     border-radius: var(--radius-sm);
     font-family: inherit;
     font-size: 0.92rem;
@@ -485,6 +641,7 @@ ul {
     cursor: pointer;
     border: 1px solid transparent;
     transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    text-align: center;
 }
 
 .btn-primary {
@@ -492,8 +649,14 @@ ul {
     color: #ffffff;
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
     background-color: var(--color-primary-hover);
+}
+
+.btn-primary:disabled {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+    border-color: #d1d5db;
 }
 
 .btn-secondary {
@@ -506,13 +669,26 @@ ul {
     background-color: var(--color-bg-subtle);
 }
 
+.btn-success {
+    background-color: var(--color-secondary);
+    color: #ffffff;
+}
+
+.btn-success:hover {
+    background-color: var(--color-secondary-hover);
+}
+
 .btn-sm {
-    padding: 0.35rem 0.75rem;
+    padding: 0.3rem 0.65rem;
     font-size: 0.82rem;
 }
 
+.btn-block {
+    width: 100%;
+}
+
 .btn-outline-primary {
-    background-color: transparent;
+    background: transparent;
     border-color: var(--color-primary);
     color: var(--color-primary);
 }
@@ -523,7 +699,7 @@ ul {
 }
 
 .btn-outline-success {
-    background-color: transparent;
+    background: transparent;
     border-color: var(--color-secondary);
     color: var(--color-secondary);
 }
@@ -533,30 +709,99 @@ ul {
     color: #ffffff;
 }
 
-.btn-outline-secondary {
-    background-color: transparent;
-    border-color: var(--color-text-muted);
-    color: var(--color-text-muted);
-}
-
-.btn-outline-secondary:hover {
-    background-color: var(--color-text-muted);
-    color: #ffffff;
-}
-
 .btn-outline-danger {
-    background-color: transparent;
-    border-color: #ef4444;
-    color: #ef4444;
+    background: transparent;
+    border-color: var(--color-danger);
+    color: var(--color-danger);
 }
 
 .btn-outline-danger:hover {
-    background-color: #ef4444;
+    background-color: var(--color-danger);
     color: #ffffff;
 }
 
 /* --------------------------------------------------------------------------
-   8. TABLAS DE DATOS (COCINA Y ADMINISTRACIÓN)
+   10. STEPPER DE SEGUIMIENTO DE ESTADO (SPRINT 3 - VISTA CLIENTE)
+   -------------------------------------------------------------------------- */
+.stepper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin: 2.5rem 0;
+}
+
+.stepper::before {
+    content: "";
+    position: absolute;
+    top: 24px;
+    left: 40px;
+    right: 40px;
+    height: 4px;
+    background-color: var(--color-border);
+    z-index: 1;
+}
+
+.stepper-progress {
+    position: absolute;
+    top: 24px;
+    left: 40px;
+    height: 4px;
+    background-color: var(--color-secondary);
+    z-index: 2;
+    transition: width 0.4s ease;
+}
+
+.step-item {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90px;
+    text-align: center;
+}
+
+.step-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 3px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+    transition: all 0.3s ease;
+}
+
+.step-item.active .step-circle {
+    border-color: var(--color-accent);
+    background-color: #fffbeb;
+    color: var(--color-accent);
+    transform: scale(1.1);
+    box-shadow: 0 0 0 5px rgba(217, 119, 6, 0.15);
+}
+
+.step-item.completed .step-circle {
+    border-color: var(--color-secondary);
+    background-color: var(--color-secondary);
+    color: #ffffff;
+}
+
+.step-title {
+    margin-top: 0.6rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+}
+
+.step-item.active .step-title, .step-item.completed .step-title {
+    color: var(--color-text-main);
+}
+
+/* --------------------------------------------------------------------------
+   11. TABLAS, BADGES Y MONITORES DE CAPACIDAD (COCINA Y ADMIN)
    -------------------------------------------------------------------------- */
 .table-responsive-container {
     width: 100%;
@@ -597,42 +842,11 @@ ul {
     background-color: #faf7f2;
 }
 
-.row-muted {
-    opacity: 0.65;
-}
-
-.table-actions {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.order-pizza-list {
-    list-style-type: disc;
-    padding-left: 1.2rem;
-    font-size: 0.88rem;
-}
-
-.order-pizza-list li {
-    margin-bottom: 0.2rem;
-}
-
-.time-badge {
-    background-color: #f1f5f9;
-    color: #334155;
-    padding: 0.25rem 0.5rem;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    font-size: 0.85rem;
-    white-space: nowrap;
-}
-
-/* Badges de Estado */
 .badge {
     display: inline-block;
-    padding: 0.3rem 0.65rem;
+    padding: 0.28rem 0.65rem;
     border-radius: 999px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 700;
     white-space: nowrap;
 }
@@ -657,15 +871,15 @@ ul {
     color: var(--status-entregado-text);
 }
 
-/* Tarjetas móviles para pedidos en Cocina */
-.mobile-orders-cards {
-    display: none;
-    flex-direction: column;
-    gap: 1rem;
+/* Tarjetas de métricas KPI para Admin */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
     margin-bottom: 2rem;
 }
 
-.order-card-mobile {
+.kpi-card {
     background-color: var(--color-bg-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -673,61 +887,182 @@ ul {
     box-shadow: var(--shadow-sm);
 }
 
-.card-mobile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: 0.6rem;
-    margin-bottom: 0.75rem;
+.kpi-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
 }
 
-.card-mobile-body p {
+.kpi-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--color-text-main);
+    margin-top: 0.25rem;
+}
+
+/* Monitor de Capacidad por Hora (Sprint 2 y 3) */
+.capacity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 0.85rem;
+    margin-bottom: 2rem;
+}
+
+.capacity-hour-card {
+    background-color: var(--color-bg-surface);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.capacity-hour-card.full {
+    border-color: #fca5a5;
+    background-color: #fef2f2;
+}
+
+.cap-hour {
     font-size: 0.9rem;
+    font-weight: 700;
     margin-bottom: 0.35rem;
 }
 
-.card-mobile-footer {
-    margin-top: 0.85rem;
-    padding-top: 0.6rem;
-    border-top: 1px dashed var(--color-border);
+.cap-meter {
+    height: 8px;
+    background-color: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 0.35rem;
+}
+
+.cap-meter-bar {
+    height: 100%;
+    background-color: var(--color-secondary);
+    transition: width 0.3s;
+}
+
+.cap-meter-bar.warning {
+    background-color: var(--color-accent);
+}
+
+.cap-meter-bar.danger {
+    background-color: var(--color-danger);
+}
+
+.cap-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
 }
 
 /* --------------------------------------------------------------------------
-   9. LAYOUT DE ADMINISTRACIÓN
+   12. TICKET DE CONFIRMACIÓN (SPRINT 3)
    -------------------------------------------------------------------------- */
-.admin-layout {
-    display: grid;
-    grid-template-columns: 1fr 1.6fr;
-    gap: 2rem;
-    align-items: start;
-}
-
-.admin-table-card {
+.ticket-card {
+    max-width: 650px;
+    margin: 2rem auto;
     background-color: var(--color-bg-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 2.5rem;
+    position: relative;
 }
 
-.text-price {
-    color: var(--color-primary);
+.ticket-header {
+    text-align: center;
+    border-bottom: 2px dashed var(--color-border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.ticket-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.ticket-folio {
+    display: inline-block;
+    background-color: #fef3c7;
+    color: #92400e;
+    font-size: 1.25rem;
+    font-weight: 800;
+    padding: 0.35rem 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid #fde68a;
+    margin: 0.5rem 0;
+}
+
+.ticket-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+}
+
+.ticket-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+}
+
+.ticket-row strong {
+    color: var(--color-text-main);
 }
 
 /* --------------------------------------------------------------------------
-   10. UTILIDADES TIPOGRÁFICAS Y GENERALES
+   13. PORTAL PRINCIPAL / SPRINT SHOWCASE
    -------------------------------------------------------------------------- */
-.font-bold { font-weight: 700; }
-.text-center { text-align: center; }
-.text-sm { font-size: 0.85rem; }
-.text-muted { color: var(--color-text-muted); }
+.portal-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.portal-card {
+    background-color: var(--color-bg-surface);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.75rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.portal-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+
+.portal-card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.portal-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.portal-card-desc {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1.25rem;
+    line-height: 1.45;
+}
 
 /* --------------------------------------------------------------------------
-   11. PIE DE PÁGINA
+   14. PIE DE PÁGINA
    -------------------------------------------------------------------------- */
 .footer {
-    background-color: #201e1c;
+    background-color: #1f1d1b;
     color: #a8a29e;
     padding: 2rem 1.5rem;
     margin-top: auto;
@@ -736,7 +1071,7 @@ ul {
 }
 
 .footer-container {
-    max-width: 1200px;
+    max-width: 1240px;
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
@@ -747,15 +1082,18 @@ ul {
 
 .footer-tech {
     font-weight: 600;
-    color: #e5e7eb;
+    color: #f3f4f6;
 }
 
 /* --------------------------------------------------------------------------
-   12. DISEÑO RESPONSIVO (MEDIA QUERIES MÓVIL Y ESCRITORIO)
+   15. RESPONSIVIDAD (MEDIA QUERIES)
    -------------------------------------------------------------------------- */
-@media (max-width: 900px) {
-    .admin-layout {
+@media (max-width: 960px) {
+    .order-layout {
         grid-template-columns: 1fr;
+    }
+    .sidebar-sticky {
+        position: static;
     }
 }
 
@@ -764,40 +1102,29 @@ ul {
         flex-direction: column;
         align-items: flex-start;
     }
-
     .nav-list {
         width: 100%;
     }
-
-    .hero h2 {
-        font-size: 1.6rem;
-    }
-
     .pizza-grid {
         grid-template-columns: 1fr;
     }
-
-    /* En móvil ocultamos la tabla de pedidos amplia y mostramos tarjetas */
-    .kitchen-toolbar-container {
-        flex-direction: column;
-        align-items: flex-start;
+    .stepper {
+        flex-wrap: wrap;
+        gap: 1rem;
     }
-
-    .table-responsive-container {
+    .stepper::before, .stepper-progress {
         display: none;
     }
-
-    .mobile-orders-cards {
-        display: flex;
+    .step-item {
+        width: 45%;
     }
-
-    /* En admin preservamos el scroll horizontal para la tabla de catálogo */
-    .admin-table-card .table-responsive-container {
-        display: block;
-    }
-
     .footer-container {
         flex-direction: column;
         text-align: center;
     }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Italiany Pizzas - Monitor de Cocina</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/login.css">
+    <!-- Protección de ruta: Solo rol cocina o admin -->
+    <script src="../../js/auth.js"></script>
+    <script>Auth.requireRole(['cocina', 'admin']);</script>
+</head>
+<body>
+
+    <!-- Barra de Sesión de Usuario -->
+    <div class="auth-bar">
+        <div class="auth-user-info">
+            <span>👨‍🍳 Usuario:</span>
+            <span id="auth-user" style="font-weight:bold;">Cocina</span>
+        </div>
+        <button type="button" id="auth-logout">Cerrar sesión</button>
+    </div>
+
+    <!-- Encabezado con Navegación Modular -->
+    <header class="header">
+        <div class="header-container">
+            <div class="brand">
+                <span class="brand-logo">🍕</span>
+                <div class="brand-text">
+                    <h1 class="brand-title">Italiany Pizzas</h1>
+                    <p class="brand-subtitle">Vista Cocina · Monitor de Comandas y Horno</p>
+                </div>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link active">👨‍🍳 Comandas de Cocina</a></li>
+                    <li><a href="../../login.html" class="nav-link">🔄 Cambiar Rol / Salir</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Barra de Herramientas de Cocina -->
+    <section class="toolbar-bar">
+        <div class="toolbar-container">
+            <div class="toolbar-info">
+                <h2>Comandas de Cocina</h2>
+                <p>Información focalizada para cocineros: número de pedido, pizzas a preparar y horario de entrega.</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="recargarCocina()">🔄 Refrescar Comandas</button>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-container">
+
+        <!-- Notificación de Requerimiento de Cocina -->
+        <div class="sprint-notice">
+            <span class="notice-icon">👨‍🍳</span>
+            <div class="notice-text">
+                <strong>Vista de Cocina Simplificada:</strong>
+                Focalizada exclusivamente en la preparación: número de pedido, detalle de pizzas y control del horno (<strong>Confirmado &rarr; En preparación &rarr; Listo</strong>). La entrega final se administra en la vista de Administración.
+            </div>
+        </div>
+
+        <!-- Monitor de Carga del Horno por Horas -->
+        <section style="margin-bottom: 2rem;">
+            <div class="section-header">
+                <h3 class="section-title" style="font-size: 1.25rem;">Capacidad del Horno por Horario (Máx 6 pizzas/hora)</h3>
+                <span class="badge badge-confirmado">Control de Producción</span>
+            </div>
+            <div class="capacity-grid" id="kitchen-capacity-grid">
+                <!-- Se inyecta dinámicamente -->
+            </div>
+        </section>
+
+        <!-- Filtros de Comandas -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="filter-buttons">
+                <button type="button" class="btn btn-sm btn-primary" onclick="filtrarEstado('TODOS', this)">Todas las Comandas (<span id="count-todos">0</span>)</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="filtrarEstado('Confirmado', this)">Por Iniciar (<span id="count-confirmados">0</span>)</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="filtrarEstado('En preparación', this)">En Horno (<span id="count-preparacion">0</span>)</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="filtrarEstado('Listo', this)">Listas en Mostrador (<span id="count-listos">0</span>)</button>
+            </div>
+        </div>
+
+        <!-- Tabla Simplificada de Comandas para Cocina -->
+        <div class="table-responsive-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 120px;">No. Pedido</th>
+                        <th scope="col">Pizzas que se deben elaborar</th>
+                        <th scope="col" class="text-center" style="width: 100px;">Pizzas</th>
+                        <th scope="col" style="width: 140px;">Hora Recogida</th>
+                        <th scope="col" style="width: 150px;">Estado en Cocina</th>
+                        <th scope="col" style="width: 220px;">Control del Horno</th>
+                    </tr>
+                </thead>
+                <tbody id="kitchen-orders-tbody">
+                    <!-- Filas renderizadas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-copy">&copy; 2026 Italiany Pizzas · Vista de Cocina</p>
+            <p class="footer-tech">UP Chiapas · Preparación y Horno</p>
+        </div>
+    </footer>
+
+    <script src="../../js/data-store.js"></script>
+    <script>
+        Auth.montarBarra();
+
+        let filtroActual = 'TODOS';
+
+        function renderizarCapacidad() {
+            const grid = document.getElementById('kitchen-capacity-grid');
+            if (!grid) return;
+            const resumen = ItalianyStore.getResumenCapacidad();
+
+            grid.innerHTML = resumen.map(item => {
+                const pct = (item.ocupadas / item.limite) * 100;
+                let colorClass = '';
+                if (pct >= 100) colorClass = 'danger';
+                else if (pct >= 66) colorClass = 'warning';
+
+                return `
+                    <div class="capacity-hour-card ${item.estaLleno ? 'full' : ''}">
+                        <div class="cap-hour">${item.hora} hrs</div>
+                        <div class="cap-meter">
+                            <div class="cap-meter-bar ${colorClass}" style="width: ${Math.min(100, pct)}%;"></div>
+                        </div>
+                        <div class="cap-status">
+                            <strong>${item.ocupadas}</strong> / ${item.limite} pizzas
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderizarConteo(pedidos) {
+            // En cocina no se muestran pedidos ya entregados para no saturar
+            const pedidosCocina = pedidos.filter(p => p.estado !== 'Entregado');
+            document.getElementById('count-todos').textContent = pedidosCocina.length;
+            document.getElementById('count-confirmados').textContent = pedidos.filter(p => p.estado === 'Confirmado').length;
+            document.getElementById('count-preparacion').textContent = pedidos.filter(p => p.estado === 'En preparación').length;
+            document.getElementById('count-listos').textContent = pedidos.filter(p => p.estado === 'Listo').length;
+        }
+
+        function renderizarTabla() {
+            const tbody = document.getElementById('kitchen-orders-tbody');
+            const todosPedidos = ItalianyStore.getPedidos();
+            renderizarConteo(todosPedidos);
+
+            // Filtrar pedidos: Cocina solo atiende pedidos activos en preparación/listos
+            let pedidos = todosPedidos.filter(p => p.estado !== 'Entregado');
+            if (filtroActual !== 'TODOS') {
+                pedidos = todosPedidos.filter(p => p.estado === filtroActual);
+            }
+
+            if (pedidos.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted" style="padding: 2.5rem;">
+                            No hay pedidos pendientes en cocina con el filtro seleccionado.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Ordenar por hora de recogida
+            pedidos.sort((a, b) => a.hora_recogida.localeCompare(b.hora_recogida));
+
+            const badgeClasses = {
+                'Confirmado': 'badge-confirmado',
+                'En preparación': 'badge-preparacion',
+                'Listo': 'badge-listo',
+                'Entregado': 'badge-entregado'
+            };
+
+            tbody.innerHTML = pedidos.map(p => {
+                let actionBtn = '';
+                if (p.estado === 'Confirmado') {
+                    actionBtn = `
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="cambiarEstado('${p.id}', 'En preparación')">
+                            🔥 Iniciar Horno
+                        </button>
+                    `;
+                } else if (p.estado === 'En preparación') {
+                    actionBtn = `
+                        <button type="button" class="btn btn-sm btn-success" onclick="cambiarEstado('${p.id}', 'Listo')">
+                            ✅ Marcar Listo
+                        </button>
+                    `;
+                } else if (p.estado === 'Listo') {
+                    actionBtn = `
+                        <span class="text-sm" style="color: var(--color-secondary); font-weight: bold;">
+                            ✨ En mostrador (esperando entrega)
+                        </span>
+                    `;
+                }
+
+                const pizzasHtml = p.pizzas.map(item => `
+                    <li style="margin-bottom: 0.25rem;">
+                        <span style="font-size: 1.05rem; font-weight: bold; color: var(--color-primary);">${item.cantidad}x</span> 
+                        <strong>${item.nombre}</strong>
+                    </li>
+                `).join('');
+
+                return `
+                    <tr>
+                        <td class="font-bold" style="font-size: 1.1rem; color: #1e293b;">#${p.id}</td>
+                        <td>
+                            <ul class="order-pizza-list" style="margin: 0; padding-left: 1.1rem; list-style-type: square;">
+                                ${pizzasHtml}
+                            </ul>
+                        </td>
+                        <td class="text-center font-bold" style="font-size: 1.2rem; color: var(--color-primary);">${p.total_pizzas}</td>
+                        <td>
+                            <span class="badge" style="background:#e2e8f0; color:#334155; font-size:0.9rem;">
+                                🕒 ${p.hora_recogida} hrs
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge ${badgeClasses[p.estado] || 'badge-confirmado'}" style="font-size:0.85rem;">
+                                ${p.estado}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                ${actionBtn}
+                                <select onchange="cambiarEstado('${p.id}', this.value)" class="form-select" style="width: auto; padding: 0.2rem 0.4rem; font-size: 0.78rem;">
+                                    <option value="" disabled selected>Cambiar...</option>
+                                    <option value="Confirmado" ${p.estado === 'Confirmado' ? 'selected' : ''}>Confirmado</option>
+                                    <option value="En preparación" ${p.estado === 'En preparación' ? 'selected' : ''}>En preparación</option>
+                                    <option value="Listo" ${p.estado === 'Listo' ? 'selected' : ''}>Listo</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function cambiarEstado(idPedido, nuevoEstado) {
+            ItalianyStore.actualizarEstadoPedido(idPedido, nuevoEstado);
+            renderizarCapacidad();
+            renderizarTabla();
+        }
+
+        function filtrarEstado(estado, btn) {
+            filtroActual = estado;
+            const buttons = document.querySelectorAll('#filter-buttons .btn');
+            buttons.forEach(b => {
+                b.classList.remove('btn-primary');
+                b.classList.add('btn-secondary');
+            });
+            btn.classList.remove('btn-secondary');
+            btn.classList.add('btn-primary');
+            renderizarTabla();
+        }
+
+        function recargarCocina() {
+            renderizarCapacidad();
+            renderizarTabla();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            ItalianyStore.init();
+            renderizarCapacidad();
+            renderizarTabla();
+            setInterval(recargarCocina, 8000);
+        });
+    </script>
+</body>
+</html>

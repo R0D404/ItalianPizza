@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión | Italiany Pizzas</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body class="login-body">
+
+    <main class="login-card">
+        <div class="login-brand">
+            <div class="login-logo">🍕</div>
+            <h1 class="login-title">Italiany Pizzas</h1>
+            <p class="login-subtitle">Universidad Politécnica de Chiapas · Sistema de Pedidos</p>
+        </div>
+
+        <div class="login-tabs" role="tablist">
+            <button type="button" class="login-tab" id="tab-login" role="tab" aria-selected="true">Ingresar</button>
+            <button type="button" class="login-tab" id="tab-registro" role="tab" aria-selected="false">Crear cuenta</button>
+        </div>
+
+        <div id="mensaje" class="msg" role="alert" aria-live="polite"></div>
+
+        <!-- LOGIN -->
+        <form id="form-login" autocomplete="on" novalidate>
+            <div class="field">
+                <label for="login-usuario">Usuario</label>
+                <input type="text" id="login-usuario" name="username" autocomplete="username" autocapitalize="none" required>
+            </div>
+            <div class="field">
+                <label for="login-pass">Contraseña</label>
+                <div class="pass-wrap">
+                    <input type="password" id="login-pass" name="password" autocomplete="current-password" required>
+                    <button type="button" class="pass-toggle" data-target="login-pass" aria-label="Mostrar u ocultar contraseña">👁️</button>
+                </div>
+            </div>
+            <button type="submit" class="btn-login" id="btn-login">Entrar</button>
+        </form>
+
+        <!-- REGISTRO (solo crea cuentas de cliente) -->
+        <form id="form-registro" autocomplete="off" novalidate hidden>
+            <div class="field">
+                <label for="reg-nombre">Nombre completo</label>
+                <input type="text" id="reg-nombre" autocomplete="name" required>
+            </div>
+            <div class="field">
+                <label for="reg-usuario">Usuario</label>
+                <input type="text" id="reg-usuario" autocapitalize="none" required>
+            </div>
+            <div class="field">
+                <label for="reg-pass">Contraseña (mín. 6 caracteres)</label>
+                <div class="pass-wrap">
+                    <input type="password" id="reg-pass" autocomplete="new-password" required>
+                    <button type="button" class="pass-toggle" data-target="reg-pass" aria-label="Mostrar u ocultar contraseña">👁️</button>
+                </div>
+            </div>
+            <button type="submit" class="btn-login">Crear cuenta y entrar</button>
+        </form>
+
+        <div class="demo-box">
+            <strong>Cuentas de demostración</strong>
+            <div class="demo-row"><span>👑 admin / admin123</span><button type="button" class="demo-fill" data-u="admin" data-p="admin123">Usar</button></div>
+            <div class="demo-row"><span>👨‍🍳 cocina / cocina123</span><button type="button" class="demo-fill" data-u="cocina" data-p="cocina123">Usar</button></div>
+            <div class="demo-row"><span>🛒 cliente / cliente123</span><button type="button" class="demo-fill" data-u="cliente" data-p="cliente123">Usar</button></div>
+        </div>
+
+        <p class="back-link"><a href="index.html">&larr; Volver al portal</a></p>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script>
+    (function () {
+        'use strict';
+
+        var $ = function (id) { return document.getElementById(id); };
+        var msg = $('mensaje');
+        var formLogin = $('form-login');
+        var formReg = $('form-registro');
+        var tabLogin = $('tab-login');
+        var tabReg = $('tab-registro');
+
+        function mostrar(texto, tipo) {
+            msg.textContent = texto;
+            msg.className = 'msg show ' + (tipo === 'ok' ? 'msg-ok' : 'msg-error');
+        }
+        function limpiar() { msg.textContent = ''; msg.className = 'msg'; }
+
+        function cambiarTab(esLogin) {
+            formLogin.hidden = !esLogin;
+            formReg.hidden = esLogin;
+            tabLogin.setAttribute('aria-selected', esLogin ? 'true' : 'false');
+            tabReg.setAttribute('aria-selected', esLogin ? 'false' : 'true');
+            limpiar();
+        }
+        tabLogin.addEventListener('click', function () { cambiarTab(true); });
+        tabReg.addEventListener('click', function () { cambiarTab(false); });
+
+        // Ver / ocultar contraseña
+        Array.prototype.forEach.call(document.querySelectorAll('.pass-toggle'), function (b) {
+            b.addEventListener('click', function () {
+                var inp = $(b.getAttribute('data-target'));
+                inp.type = inp.type === 'password' ? 'text' : 'password';
+            });
+        });
+
+        // Rellenar cuentas demo
+        Array.prototype.forEach.call(document.querySelectorAll('.demo-fill'), function (b) {
+            b.addEventListener('click', function () {
+                cambiarTab(true);
+                $('login-usuario').value = b.getAttribute('data-u');
+                $('login-pass').value = b.getAttribute('data-p');
+                $('login-pass').focus();
+            });
+        });
+
+        // Destino después de entrar: solo rutas internas válidas y del rol correcto
+        function destino(sesion) {
+            var next = new URLSearchParams(window.location.search).get('next') || '';
+            var m = /^vistas\/(cliente|cocina|admin)\/[A-Za-z0-9_.-]+\.html$/.exec(next);
+            if (m && (m[1] === sesion.rol || sesion.rol === 'admin')) return next;
+            return Auth.homePorRol(sesion.rol);
+        }
+
+        function entrar(res) {
+            if (!res.ok) { mostrar(res.error, 'error'); return; }
+            mostrar('¡Bienvenido, ' + res.sesion.nombre + '! Redirigiendo…', 'ok');
+            setTimeout(function () { window.location.href = destino(res.sesion); }, 600);
+        }
+
+        formLogin.addEventListener('submit', function (e) {
+            e.preventDefault();
+            entrar(Auth.login($('login-usuario').value, $('login-pass').value));
+        });
+
+        formReg.addEventListener('submit', function (e) {
+            e.preventDefault();
+            entrar(Auth.registrar($('reg-nombre').value, $('reg-usuario').value, $('reg-pass').value));
+        });
+
+        // Avisos por query string
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('denegado')) {
+            mostrar('No tienes permiso para ver esa sección. Entra con otra cuenta.', 'error');
+        }
+
+        // Si ya hay sesión, ir directo a su vista
+        var activa = Auth.sesion();
+        if (activa && !params.get('denegado')) {
+            window.location.replace(Auth.homePorRol(activa.rol));
+        }
+    })();
+    </script>
+</body>
+</html>

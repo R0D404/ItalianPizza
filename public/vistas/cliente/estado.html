@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Italiany Pizzas - Consulta de Estado de Pedido</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/login.css">
+    <script src="../../js/auth.js"></script>
+    <script>Auth.requireRole(['cliente', 'admin']);</script>
+</head>
+<body>
+
+    <!-- Barra de Sesión de Usuario -->
+    <div class="auth-bar">
+        <div class="auth-user-info">
+            <span>🛒 Cliente:</span>
+            <span id="auth-user" style="font-weight:bold;">Cliente</span>
+        </div>
+        <button type="button" id="auth-logout">Cerrar sesión</button>
+    </div>
+
+    <!-- Encabezado con Navegación -->
+    <header class="header">
+        <div class="header-container">
+            <div class="brand">
+                <span class="brand-logo">🍕</span>
+                <div class="brand-text">
+                    <h1 class="brand-title">Italiany Pizzas</h1>
+                    <p class="brand-subtitle">Vista Cliente · Rastreo de Pedido</p>
+                </div>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link">🛒 Menú y Pedido</a></li>
+                    <li><a href="estado.html" class="nav-link active">🔍 Rastreo de Pedido</a></li>
+                    <li><a href="../../login.html" class="nav-link">🔄 Cambiar Rol / Salir</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <!-- Notificación de Requerimiento Cumplido -->
+        <div class="sprint-notice">
+            <span class="notice-icon">⏱️</span>
+            <div class="notice-text">
+                <strong>Sprint 3 — Consulta de Estado por el Cliente:</strong>
+                Permite al cliente buscar su comanda mediante su Folio o Teléfono y consultar en tiempo real el ciclo de preparación a través de la barra de estados interactiva (<strong>Confirmado &rarr; En preparación &rarr; Listo &rarr; Entregado</strong>).
+            </div>
+        </div>
+
+        <!-- Buscador de Pedido -->
+        <section class="form-card" style="max-width: 720px; margin: 0 auto 2rem auto;">
+            <div class="form-header">
+                <h2 class="form-title">Rastreo de tu Comanda</h2>
+                <p class="form-subtitle">Ingresa tu número de folio (ej. <code>PED-101</code>) o el teléfono con el que te registraste:</p>
+            </div>
+
+            <form onsubmit="handleBuscar(event)" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    class="form-input" 
+                    style="flex: 1; min-width: 220px;" 
+                    placeholder="Ej. PED-101 ó 5543219876" 
+                    required
+                >
+                <button type="submit" class="btn btn-primary">
+                    🔍 Consultar Estado
+                </button>
+            </form>
+        </section>
+
+        <!-- Contenedor del Estado del Pedido Consultado -->
+        <div id="status-result-container" style="max-width: 800px; margin: 0 auto;">
+            <!-- Se inyecta dinámicamente -->
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-copy">&copy; 2026 Italiany Pizzas · Universidad Politécnica de Chiapas</p>
+            <p class="footer-tech">Sprint 3: Rastreo de Estado del Cliente</p>
+        </div>
+    </footer>
+
+    <script src="../../js/data-store.js"></script>
+    <script>
+        const ESTADOS_ORDEN = ["Confirmado", "En preparación", "Listo", "Entregado"];
+
+        function getStepIndex(estado) {
+            return ESTADOS_ORDEN.indexOf(estado);
+        }
+
+        function renderizarEstado(pedido) {
+            const container = document.getElementById('status-result-container');
+            if (!pedido) {
+                container.innerHTML = `
+                    <div class="form-card text-center" style="padding: 3rem;">
+                        <span style="font-size: 2.5rem;">🔍❌</span>
+                        <h3 style="margin-top: 1rem; color: var(--color-primary);">No se encontró ningún pedido</h3>
+                        <p class="text-muted">Verifica que el folio (ej. PED-101) o el teléfono sean correctos.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const stepIdx = getStepIndex(pedido.estado);
+            const progressPercent = stepIdx >= 0 ? (stepIdx / (ESTADOS_ORDEN.length - 1)) * 100 : 0;
+
+            const badgeClasses = {
+                'Confirmado': 'badge-confirmado',
+                'En preparación': 'badge-preparacion',
+                'Listo': 'badge-listo',
+                'Entregado': 'badge-entregado'
+            };
+
+            container.innerHTML = `
+                <div class="form-card" style="box-shadow: var(--shadow-md); border-top: 4px solid var(--color-primary);">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem;">
+                        <div>
+                            <span class="badge ${badgeClasses[pedido.estado] || 'badge-confirmado'}" style="font-size: 0.9rem; padding: 0.35rem 0.85rem;">
+                                ${pedido.estado}
+                            </span>
+                            <h2 style="font-size: 1.4rem; font-weight: 800; margin-top: 0.35rem;">Folio: #${pedido.id}</h2>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="text-muted text-sm">Recogida programada:</span>
+                            <div style="font-size: 1.25rem; font-weight: 800; color: var(--color-secondary);">${pedido.hora_recogida} hrs</div>
+                        </div>
+                    </div>
+
+                    <!-- STEPPER INTERACTIVO DE 4 ESTADOS -->
+                    <div class="stepper">
+                        <div class="stepper-progress" style="width: calc(${progressPercent}% - 80px);"></div>
+                        
+                        <div class="step-item ${stepIdx >= 0 ? (stepIdx === 0 ? 'active' : 'completed') : ''}">
+                            <div class="step-circle">${stepIdx > 0 ? '✓' : '📝'}</div>
+                            <span class="step-title">1. Confirmado</span>
+                        </div>
+
+                        <div class="step-item ${stepIdx >= 1 ? (stepIdx === 1 ? 'active' : 'completed') : ''}">
+                            <div class="step-circle">${stepIdx > 1 ? '✓' : '🔥'}</div>
+                            <span class="step-title">2. En Preparación</span>
+                        </div>
+
+                        <div class="step-item ${stepIdx >= 2 ? (stepIdx === 2 ? 'active' : 'completed') : ''}">
+                            <div class="step-circle">${stepIdx > 2 ? '✓' : '🍕'}</div>
+                            <span class="step-title">3. Listo</span>
+                        </div>
+
+                        <div class="step-item ${stepIdx >= 3 ? 'completed active' : ''}">
+                            <div class="step-circle">${stepIdx === 3 ? '✓' : '🎉'}</div>
+                            <span class="step-title">4. Entregado</span>
+                        </div>
+                    </div>
+
+                    <!-- Mensaje orientativo según estado -->
+                    <div style="background-color: var(--color-bg-subtle); padding: 1rem; border-radius: var(--radius-sm); margin: 1.5rem 0; font-size: 0.9rem;">
+                        ${
+                            pedido.estado === 'Confirmado' ? '📌 <strong>Tu pedido ha sido recibido:</strong> La cocina está lista para preparar tus pizzas con la frescura adecuada antes de tu hora de recogida.' :
+                            pedido.estado === 'En preparación' ? '👨‍🍳 <strong>¡Manos en la masa!</strong> El maestro pizzero está horneando tus pizzas artesanales a la piedra en este momento.' :
+                            pedido.estado === 'Listo' ? '🛎️ <strong>¡Tu pedido está listo!</strong> Ya puedes presentarte en la sucursal a recoger tus pizzas calientes.' :
+                            '✅ <strong>Pedido completado:</strong> El pedido fue entregado satisfactoriamente. ¡Buen provecho!'
+                        }
+                    </div>
+
+                    <!-- Datos del cliente y desglose -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                        <div>
+                            <span class="text-muted">Nombre del Cliente:</span><br>
+                            <strong>${pedido.cliente}</strong>
+                        </div>
+                        <div>
+                            <span class="text-muted">Teléfono Registrado:</span><br>
+                            <strong>${pedido.telefono}</strong>
+                        </div>
+                    </div>
+
+                    <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem;">Pizzas incluidas en este pedido:</h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.25rem;">
+                        ${pedido.pizzas.map(p => `
+                            <div style="display: flex; justify-content: space-between; font-size: 0.88rem; padding: 0.4rem 0.6rem; background: #ffffff; border: 1px solid var(--color-border); border-radius: 4px;">
+                                <span>${p.cantidad}x ${p.nombre}</span>
+                                <strong>$${(p.cantidad * p.precio).toFixed(2)}</strong>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; font-size: 1.15rem; border-top: 1px solid var(--color-border); padding-top: 0.75rem;">
+                        <span>Total de Pizzas: <strong>${pedido.total_pizzas}</strong></span>
+                        <span>Total: <strong style="color: var(--color-primary); font-size: 1.25rem;">$${pedido.total_monto.toFixed(2)} MXN</strong></span>
+                    </div>
+
+                    <div style="margin-top: 1.5rem; text-align: right;">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="recargarPedido('${pedido.id}')">
+                            🔄 Actualizar Estado
+                        </button>
+                    </div>
+
+                </div>
+            `;
+        }
+
+        function handleBuscar(e) {
+            e.preventDefault();
+            const term = document.getElementById('search-input').value;
+            const pedido = ItalianyStore.buscarPedido(term);
+            renderizarEstado(pedido);
+        }
+
+        function recargarPedido(id) {
+            const pedido = ItalianyStore.buscarPedido(id);
+            renderizarEstado(pedido);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            Auth.montarBarra();
+            const urlParams = new URLSearchParams(window.location.search);
+            const idParam = urlParams.get('id');
+            let pedido = null;
+
+            if (idParam) {
+                document.getElementById('search-input').value = idParam;
+                pedido = ItalianyStore.buscarPedido(idParam);
+            } else {
+                pedido = ItalianyStore.getUltimoPedido();
+                if (pedido) {
+                    document.getElementById('search-input').value = pedido.id;
+                }
+            }
+
+            renderizarEstado(pedido);
+        });
+    </script>
+</body>
+</html>

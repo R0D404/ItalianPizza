@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Italiany Pizzas - Panel de Administración</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/login.css">
+    <!-- Protección de ruta: Solo Administrador -->
+    <script src="../../js/auth.js"></script>
+    <script>Auth.requireRole(['admin']);</script>
+</head>
+<body>
+
+    <!-- Barra de Sesión de Usuario -->
+    <div class="auth-bar">
+        <div class="auth-user-info">
+            <span>👑 Administrador:</span>
+            <span id="auth-user" style="font-weight:bold;">Admin</span>
+        </div>
+        <button type="button" id="auth-logout">Cerrar sesión</button>
+    </div>
+
+    <!-- Encabezado con Navegación -->
+    <header class="header">
+        <div class="header-container">
+            <div class="brand">
+                <span class="brand-logo">🍕</span>
+                <div class="brand-text">
+                    <h1 class="brand-title">Italiany Pizzas</h1>
+                    <p class="brand-subtitle">Vista Administrador · Supervisión Global y Entregas</p>
+                </div>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link active">📊 Panel Admin</a></li>
+                    <li><a href="../cocina/index.html" class="nav-link">👨‍🍳 Ver Cocina</a></li>
+                    <li><a href="../cliente/index.html" class="nav-link">🛒 Ver Menú Cliente</a></li>
+                    <li><a href="../../login.html" class="nav-link">🔄 Cambiar Rol / Salir</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="toolbar-bar">
+        <div class="toolbar-container">
+            <div class="toolbar-info">
+                <h2>Panel de Supervisión, Entregas y Catálogo</h2>
+                <p>Métricas operativas del día, control y validación de entregas de pedidos y administración de recetas.</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="recargarAdmin()">🔄 Actualizar Datos</button>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-container">
+
+        <!-- Notificación de Requerimiento Cumplido -->
+        <div class="sprint-notice">
+            <span class="notice-icon">📊</span>
+            <div class="notice-text">
+                <strong>Supervisión y Control de Entregas en Administración:</strong>
+                Aquí se gestiona el ciclo completo del negocio. El administrador cuenta con la facultad exclusiva de <strong>entregar pedidos a los clientes</strong> una vez que cocina los ha dejado listos, verificar pagos y dar de alta nuevas pizzas en el catálogo.
+            </div>
+        </div>
+
+        <!-- Tarjetas KPI de Métricas -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <span class="kpi-label">Total Pedidos</span>
+                <div class="kpi-value" id="kpi-pedidos">0</div>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">Pizzas Ordenadas</span>
+                <div class="kpi-value" id="kpi-pizzas">0</div>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">Pedidos Por Entregar</span>
+                <div class="kpi-value" style="color: var(--color-accent);" id="kpi-activos">0</div>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">Ventas Totales Proyectadas</span>
+                <div class="kpi-value" style="color: var(--color-secondary);" id="kpi-ventas">$0.00</div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 1: SUPERVISIÓN DE PEDIDOS Y GESTIÓN DE ENTREGAS -->
+        <section style="margin-bottom: 3.5rem;">
+            <div class="section-header">
+                <h3 class="section-title">Control de Pedidos y Entregas</h3>
+                <span class="badge badge-confirmado">Módulo de Entrega Exclusivo</span>
+            </div>
+            <p class="section-description">
+                Supervisa todos los pedidos. Cuando un pedido esté <strong>Listo</strong> en cocina, presiona <strong>📦 Entregar al Cliente</strong> para marcarlo como <strong>Entregado</strong> y archivar la comanda.
+            </p>
+
+            <div class="table-responsive-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 90px;">Folio</th>
+                            <th scope="col">Cliente y Contacto</th>
+                            <th scope="col">Pizzas Solicitadas</th>
+                            <th scope="col">Hora Recogida</th>
+                            <th scope="col">Monto</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col" style="width: 240px;">Gestión de Entrega</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-orders-tbody">
+                        <!-- Filas de pedidos -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: GESTIÓN DE CATÁLOGO DE PIZZAS -->
+        <section>
+            <div class="section-header">
+                <h3 class="section-title">Gestión del Catálogo de Pizzas (Esquema SQL)</h3>
+                <span class="badge badge-preparacion">Catálogo Dinámico</span>
+            </div>
+            <p class="section-description">Administra los productos de la carta. Al registrar una pizza nueva, estará disponible de inmediato en el menú del cliente.</p>
+
+            <div class="admin-layout">
+                
+                <!-- Formulario de Alta de Pizza -->
+                <div class="form-card">
+                    <div class="form-header">
+                        <h4 class="form-title">Registrar Nueva Pizza</h4>
+                        <p class="form-subtitle">Campos mapeados con la tabla <code>pizzas</code> (nombre, descripción, precio).</p>
+                    </div>
+
+                    <form id="admin-add-pizza-form" onsubmit="handleGuardarPizza(event)">
+                        
+                        <div class="form-group">
+                            <label for="admin-pizza-nombre" class="form-label">
+                                Nombre Comercial <span class="required-indicator">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="admin-pizza-nombre" 
+                                class="form-input" 
+                                placeholder="Ej. Pizza Napolitana Especial" 
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="admin-pizza-desc" class="form-label">
+                                Ingredientes y Descripción <span class="required-indicator">*</span>
+                            </label>
+                            <textarea 
+                                id="admin-pizza-desc" 
+                                class="form-input form-textarea" 
+                                placeholder="Pomodoro, queso mozzarella artesanal, albahaca fresca..." 
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="admin-pizza-precio" class="form-label">
+                                Precio Unitario ($ MXN) <span class="required-indicator">*</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                id="admin-pizza-precio" 
+                                class="form-input" 
+                                placeholder="Ej. 195.00" 
+                                min="0" 
+                                step="0.50" 
+                                required
+                            >
+                            <span class="field-hint">Regla SQL: precio numérico mayor o igual a 0.</span>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                ➕ Guardar Pizza en Catálogo
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- Tabla de Pizzas Actuales -->
+                <div class="form-card" style="padding: 1.5rem;">
+                    <div class="section-header" style="margin-bottom: 1rem;">
+                        <h4 class="form-title">Catálogo Actual de la Pizzería</h4>
+                        <span class="badge badge-confirmado" id="admin-catalog-count">0 items</span>
+                    </div>
+
+                    <div class="table-responsive-container" style="box-shadow: none; margin-bottom: 0;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Precio</th>
+                                    <th scope="col">Estado</th>
+                                    <th scope="col">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-catalog-tbody">
+                                <!-- Filas de pizzas -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-copy">&copy; 2026 Italiany Pizzas · Panel de Administración</p>
+            <p class="footer-tech">Supervisión Gerencial de Pedidos, Entregas y Catálogo</p>
+        </div>
+    </footer>
+
+    <script src="../../js/data-store.js"></script>
+    <script>
+        Auth.montarBarra();
+
+        function renderizarKPIs(pedidos) {
+            const totalPedidos = pedidos.length;
+            const totalPizzas = pedidos.reduce((acc, p) => acc + (p.total_pizzas || 0), 0);
+            const activos = pedidos.filter(p => p.estado !== 'Entregado').length;
+            const ventas = pedidos.reduce((acc, p) => acc + (p.total_monto || 0), 0);
+
+            document.getElementById('kpi-pedidos').textContent = totalPedidos;
+            document.getElementById('kpi-pizzas').textContent = totalPizzas;
+            document.getElementById('kpi-activos').textContent = activos;
+            document.getElementById('kpi-ventas').textContent = `$${ventas.toFixed(2)}`;
+        }
+
+        function renderizarTablaPedidos() {
+            const tbody = document.getElementById('admin-orders-tbody');
+            const pedidos = ItalianyStore.getPedidos();
+            renderizarKPIs(pedidos);
+
+            const badgeClasses = {
+                'Confirmado': 'badge-confirmado',
+                'En preparación': 'badge-preparacion',
+                'Listo': 'badge-listo',
+                'Entregado': 'badge-entregado'
+            };
+
+            tbody.innerHTML = pedidos.map(p => {
+                let deliveryAction = '';
+                if (p.estado === 'Listo') {
+                    deliveryAction = `
+                        <button type="button" class="btn btn-sm btn-success" style="font-weight:bold;" onclick="handleAdminCambiarEstado('${p.id}', 'Entregado')">
+                            📦 Entregar al Cliente
+                        </button>
+                    `;
+                } else if (p.estado === 'Entregado') {
+                    deliveryAction = `
+                        <div style="display:flex; align-items:center; gap:0.4rem;">
+                            <span class="text-sm" style="color:var(--color-secondary); font-weight:bold;">✓ Entregado</span>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" style="font-size:0.75rem;" onclick="handleAdminCambiarEstado('${p.id}', 'Listo')">Deshacer</button>
+                        </div>
+                    `;
+                } else {
+                    deliveryAction = `
+                        <span class="text-sm text-muted">En proceso en cocina...</span>
+                    `;
+                }
+
+                return `
+                <tr class="${p.estado === 'Entregado' ? 'row-muted' : ''}">
+                    <td class="font-bold">#${p.id}</td>
+                    <td>
+                        <strong>${p.cliente}</strong>
+                        <div class="text-sm text-muted">Tel: ${p.telefono}</div>
+                    </td>
+                    <td>
+                        <span class="text-sm">
+                            ${p.pizzas.map(i => `${i.cantidad}x ${i.nombre}`).join(', ')}
+                        </span>
+                        <div class="text-sm text-muted font-bold">${p.total_pizzas} pizzas</div>
+                    </td>
+                    <td><span class="badge" style="background:#e2e8f0; color:#1e293b;">🕒 ${p.hora_recogida} hrs</span></td>
+                    <td class="font-bold text-price">$${p.total_monto.toFixed(2)}</td>
+                    <td><span class="badge ${badgeClasses[p.estado] || 'badge-confirmado'}">${p.estado}</span></td>
+                    <td>
+                        <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                            ${deliveryAction}
+                            <select onchange="handleAdminCambiarEstado('${p.id}', this.value)" class="form-select" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
+                                <option value="" disabled selected>Cambiar estado...</option>
+                                <option value="Confirmado" ${p.estado === 'Confirmado' ? 'selected' : ''}>Confirmado</option>
+                                <option value="En preparación" ${p.estado === 'En preparación' ? 'selected' : ''}>En preparación</option>
+                                <option value="Listo" ${p.estado === 'Listo' ? 'selected' : ''}>Listo (Cocina)</option>
+                                <option value="Entregado" ${p.estado === 'Entregado' ? 'selected' : ''}>Entregado (Cliente)</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function handleAdminCambiarEstado(id, nuevoEstado) {
+            ItalianyStore.actualizarEstadoPedido(id, nuevoEstado);
+            renderizarTablaPedidos();
+        }
+
+        function renderizarCatalogo() {
+            const tbody = document.getElementById('admin-catalog-tbody');
+            const pizzas = ItalianyStore.getPizzas();
+            document.getElementById('admin-catalog-count').textContent = `${pizzas.length} pizzas`;
+
+            tbody.innerHTML = pizzas.map(p => `
+                <tr>
+                    <td class="font-bold">#${p.id}</td>
+                    <td>
+                        <strong>${p.nombre}</strong>
+                        <div class="text-sm text-muted" style="max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${p.descripcion}
+                        </div>
+                    </td>
+                    <td class="font-bold text-price">$${p.precio.toFixed(2)}</td>
+                    <td>
+                        <span class="pizza-badge ${p.disponible ? 'available' : 'unavailable'}">
+                            ${p.disponible ? 'Activa' : 'Inactiva'}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 0.35rem;">
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="toggleDisponibilidad(${p.id})">
+                                ${p.disponible ? 'Desactivar' : 'Activar'}
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="eliminarPizza(${p.id})">
+                                🗑️
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function handleGuardarPizza(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('admin-pizza-nombre').value.trim();
+            const desc = document.getElementById('admin-pizza-desc').value.trim();
+            const precio = parseFloat(document.getElementById('admin-pizza-precio').value);
+
+            if (!nombre || !desc || isNaN(precio) || precio < 0) {
+                alert('Por favor verifica los campos obligatorios y que el precio sea mayor o igual a 0.');
+                return;
+            }
+
+            ItalianyStore.agregarPizza({
+                nombre: nombre,
+                descripcion: desc,
+                precio: precio
+            });
+
+            document.getElementById('admin-add-pizza-form').reset();
+            renderizarCatalogo();
+            alert('✅ ¡Pizza registrada correctamente y sincronizada en el menú de clientes!');
+        }
+
+        function toggleDisponibilidad(id) {
+            ItalianyStore.toggleDisponibilidadPizza(id);
+            renderizarCatalogo();
+        }
+
+        function eliminarPizza(id) {
+            if (confirm('¿Estás seguro de eliminar esta pizza del catálogo?')) {
+                ItalianyStore.eliminarPizza(id);
+                renderizarCatalogo();
+            }
+        }
+
+        function recargarAdmin() {
+            renderizarTablaPedidos();
+            renderizarCatalogo();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            ItalianyStore.init();
+            renderizarTablaPedidos();
+            renderizarCatalogo();
+        });
+    </script>
+</body>
+</html>

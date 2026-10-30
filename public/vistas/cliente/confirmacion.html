@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Italiany Pizzas - Pedido Confirmado</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="../../css/login.css">
+    <script src="../../js/auth.js"></script>
+    <script>Auth.requireRole(['cliente', 'admin']);</script>
+</head>
+<body>
+
+    <!-- Barra de Sesión de Usuario -->
+    <div class="auth-bar">
+        <div class="auth-user-info">
+            <span>🛒 Cliente:</span>
+            <span id="auth-user" style="font-weight:bold;">Cliente</span>
+        </div>
+        <button type="button" id="auth-logout">Cerrar sesión</button>
+    </div>
+
+    <!-- Encabezado con Navegación -->
+    <header class="header">
+        <div class="header-container">
+            <div class="brand">
+                <span class="brand-logo">🍕</span>
+                <div class="brand-text">
+                    <h1 class="brand-title">Italiany Pizzas</h1>
+                    <p class="brand-subtitle">Vista Cliente · Confirmación</p>
+                </div>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link">🛒 Menú y Pedido</a></li>
+                    <li><a href="estado.html" class="nav-link">🔍 Rastreo de Pedido</a></li>
+                    <li><a href="../../login.html" class="nav-link">🔄 Cambiar Rol / Salir</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <!-- Notificación de Requerimiento Cumplido -->
+        <div class="sprint-notice">
+            <span class="notice-icon">✅</span>
+            <div class="notice-text">
+                <strong>Sprint 3 — Confirmación del Pedido:</strong>
+                Pantalla dedicada para la confirmación del pedido con desglose de ítems, hora de recogida asignada, folio identificador y enlace directo al seguimiento de estado.
+            </div>
+        </div>
+
+        <div class="ticket-card" id="ticket-content">
+            <div class="ticket-header">
+                <div class="ticket-icon">🎉</div>
+                <h2 style="color: var(--color-primary); font-size: 1.6rem; font-weight: 800;">¡Tu Pedido ha sido Confirmado!</h2>
+                <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-top: 0.35rem;">
+                    Hemos registrado tu comanda en el sistema. Preséntate en sucursal en el horario programado.
+                </p>
+                <div class="ticket-folio" id="ticket-folio-text">FOLIO: #PED-000</div>
+            </div>
+
+            <div class="ticket-details">
+                <div class="ticket-row">
+                    <span class="text-muted">Cliente:</span>
+                    <strong id="ticket-cliente">--</strong>
+                </div>
+                <div class="ticket-row">
+                    <span class="text-muted">Teléfono de contacto:</span>
+                    <strong id="ticket-telefono">--</strong>
+                </div>
+                <div class="ticket-row">
+                    <span class="text-muted">Horario de recogida acordado:</span>
+                    <strong id="ticket-hora" style="color: var(--color-secondary); font-size: 1.1rem;">--:-- hrs</strong>
+                </div>
+                <div class="ticket-row">
+                    <span class="text-muted">Estado actual:</span>
+                    <span class="badge badge-confirmado" id="ticket-estado">Confirmado</span>
+                </div>
+            </div>
+
+            <div style="border-top: 1px dashed var(--color-border); padding-top: 1rem; margin-bottom: 1.5rem;">
+                <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--color-text-main);">Detalle de Pizzas Ordenadas:</h4>
+                <div id="ticket-pizzas-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <!-- Se inyecta dinámicamente -->
+                </div>
+            </div>
+
+            <div class="ticket-row" style="border-top: 2px solid var(--color-border); padding-top: 0.75rem; font-size: 1.25rem;">
+                <strong>Total a Pagar en Caja:</strong>
+                <span id="ticket-total" style="color: var(--color-primary); font-weight: 800;">$0.00 MXN</span>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                <a href="#" id="btn-rastrear" class="btn btn-primary btn-block">
+                    🔍 Rastrear Estado en Tiempo Real
+                </a>
+                <a href="index.html" class="btn btn-secondary btn-block">
+                    🛒 Realizar Otro Pedido
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-copy">&copy; 2026 Italiany Pizzas · Universidad Politécnica de Chiapas</p>
+            <p class="footer-tech">Sprint 3: Confirmación e Integración de Pedidos</p>
+        </div>
+    </footer>
+
+    <script src="../../js/data-store.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Auth.montarBarra();
+            const urlParams = new URLSearchParams(window.location.search);
+            const folio = urlParams.get('folio');
+            
+            let pedido = null;
+            if (folio) {
+                pedido = ItalianyStore.buscarPedido(folio);
+            }
+            if (!pedido) {
+                pedido = ItalianyStore.getUltimoPedido();
+            }
+
+            if (!pedido) {
+                document.getElementById('ticket-content').innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <h3>No hay pedidos activos recientemente</h3>
+                        <p class="text-muted">Por favor regresa al menú para seleccionar tus pizzas.</p>
+                        <a href="index.html" class="btn btn-primary" style="margin-top: 1rem;">Ir al Menú</a>
+                    </div>
+                `;
+                return;
+            }
+
+            document.getElementById('ticket-folio-text').textContent = `FOLIO: #${pedido.id}`;
+            document.getElementById('ticket-cliente').textContent = pedido.cliente;
+            document.getElementById('ticket-telefono').textContent = pedido.telefono;
+            document.getElementById('ticket-hora').textContent = `${pedido.hora_recogida} hrs`;
+            document.getElementById('ticket-total').textContent = `$${pedido.total_monto.toFixed(2)} MXN`;
+            
+            const btnRastrear = document.getElementById('btn-rastrear');
+            btnRastrear.href = `estado.html?id=${pedido.id}`;
+
+            const pizzasContainer = document.getElementById('ticket-pizzas-list');
+            pizzasContainer.innerHTML = pedido.pizzas.map(p => `
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; background: var(--color-bg-subtle); padding: 0.4rem 0.75rem; border-radius: 4px;">
+                    <span>${p.cantidad}x ${p.nombre}</span>
+                    <strong>$${(p.cantidad * p.precio).toFixed(2)}</strong>
+                </div>
+            `).join('');
+        });
+    </script>
+</body>
+</html>
